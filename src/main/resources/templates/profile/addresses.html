@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'profile')}">
+<head><title>Mes adresses · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container" style="max-width:600px">
+        <p><a th:href="@{/profile}">← Profil</a></p>
+        <h1>Mes adresses</h1>
+        <div class="card">
+            <p class="muted" th:if="${#lists.isEmpty(currentUser.addresses)}">Aucune adresse enregistrée.</p>
+            <div class="row between" th:each="a : ${currentUser.addresses}" style="padding:12px 0;border-bottom:1px solid var(--line)">
+                <div><b th:text="${a.label}">Domicile</b><br><span class="muted small" th:text="${a.address}"></span></div>
+                <form th:action="@{/profile/addresses/{id}/delete(id=${a.id})}" method="post">
+                    <button class="btn btn-danger" type="submit">Supprimer</button>
+                </form>
+            </div>
+        </div>
+        <form class="card mt" th:action="@{/profile/addresses}" method="post">
+            <h3>Ajouter une adresse</h3>
+            <div class="form-group"><label class="lbl">Nom</label><input class="input" name="label" placeholder="Domicile" required></div>
+            <div class="form-group"><label class="lbl">Adresse</label><input class="input" name="address" placeholder="Antananarivo, Ivandry" required></div>
+            <button class="btn btn-primary btn-block" type="submit">Ajouter</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

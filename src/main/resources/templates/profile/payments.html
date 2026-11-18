@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'profile')}">
+<head><title>Moyens de paiement · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container" style="max-width:600px">
+        <p><a th:href="@{/profile}">← Profil</a></p>
+        <h1>Mes moyens de paiement</h1>
+        <div class="card menu">
+            <a href="#"><span class="i">📱</span> Mobile Money (MVola, Orange Money, Airtel Money)</a>
+            <a href="#"><span class="i">💳</span> Carte bancaire (Visa, Mastercard)</a>
+            <a href="#"><span class="i">💵</span> Paiement à la prise en charge</a>
+        </div>
+        <p class="muted small mt">Vous choisissez le moyen de paiement à chaque réservation. Aucune donnée bancaire n'est enregistrée par cette application.</p>
+    </div>
+</main>
+</body>
+</html>

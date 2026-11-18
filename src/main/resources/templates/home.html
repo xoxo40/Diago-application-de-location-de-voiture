@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'home')}">
+<head><title>DiaGo · Location de voitures à Madagascar</title></head>
+<body>
+<main>
+    <section class="hero-site">
+        <div class="wrap">
+            <h1>Trouvez la voiture idéale pour <em>chaque trajet</em></h1>
+            <p class="lead">Louez à Madagascar, avec ou sans chauffeur. Réservez en ligne, nous validons et pouvons vous livrer la voiture à votre adresse.</p>
+            <div class="hero-cta">
+                <a class="pill-btn gold" th:href="@{/cars}">Voir les voitures <svg class="ic"><use href="#s-arrow"/></svg></a>
+                <a class="pill-btn" th:if="${currentUser == null}" th:href="@{/register}">Créer un compte</a>
+            </div>
+            <div class="hero-pills">
+                <span><svg class="ic"><use href="#s-driver"/></svg>Chauffeur professionnel</span>
+                <span><svg class="ic"><use href="#s-truck"/></svg>Livraison à domicile</span>
+                <span><svg class="ic"><use href="#s-shield"/></svg>Assurance tous risques</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="wrap">
+        <form class="search-bar" th:action="@{/cars}" method="get">
+            <div class="sb-field"><label><svg class="ic"><use href="#s-pin"/></svg>Lieu</label>
+                <input name="pickup" list="places" th:value="${draft.pickupLocation}" required>
+                <datalist id="places">
+                    <option value="Antananarivo, Ivandry"><option value="Antananarivo Centre-ville">
+                    <option value="Aéroport Ivato"><option value="Antananarivo, Antsahavola">
+                    <option value="Toamasina"><option value="Nosy Be">
+                </datalist></div>
+            <div class="sb-field"><label><svg class="ic"><use href="#s-calendar"/></svg>Départ</label>
+                <input type="date" name="startDate" th:value="${draft.startDate}" required></div>
+            <div class="sb-field"><label><svg class="ic"><use href="#s-clock"/></svg>Heure</label>
+                <input type="time" name="startTime" th:value="${draft.startTime}" required></div>
+            <div class="sb-field"><label><svg class="ic"><use href="#s-calendar"/></svg>Retour</label>
+                <input type="date" name="endDate" th:value="${draft.endDate}" required></div>
+            <div class="sb-field"><label><svg class="ic"><use href="#s-clock"/></svg>Heure</label>
+                <input type="time" name="endTime" th:value="${draft.endTime}" required></div>
+            <button class="pill-btn fill sb-go" type="submit"><svg class="ic"><use href="#s-search"/></svg>Rechercher</button>
+        </form>
+
+        <div class="perks">
+            <div class="perk"><div class="pi"><svg class="ic"><use href="#s-driver"/></svg></div><div><b>Avec ou sans chauffeur</b><span>Vous conduisez, ou un chauffeur DiaGo s'en charge.</span></div></div>
+            <div class="perk"><div class="pi"><svg class="ic"><use href="#s-truck"/></svg></div><div><b>Livraison à domicile</b><span>Nous apportons la voiture à votre adresse.</span></div></div>
+            <div class="perk"><div class="pi"><svg class="ic"><use href="#s-shield"/></svg></div><div><b>Assurance tous risques</b><span>Roulez l'esprit tranquille, en option.</span></div></div>
+            <div class="perk"><div class="pi"><svg class="ic"><use href="#s-key"/></svg></div><div><b>Réservation validée</b><span>Chaque demande est confirmée par notre équipe.</span></div></div>
+        </div>
+
+        <section class="sec">
+            <div class="sec-head"><div><h2>Choisissez votre expérience</h2><p>Trois niveaux de confort, une seule exigence : la qualité.</p></div></div>
+            <div class="cats">
+                <a th:each="c : ${categories}" class="cat" th:classappend="${c.css}" th:href="@{/cars(category=${c})}">
+                    <div class="ci">
+                        <svg class="ic" th:if="${c.css == 'simple'}"><use href="#s-car"/></svg>
+                        <svg class="ic" th:if="${c.css == 'premium'}"><use href="#s-star"/></svg>
+                        <svg class="ic" th:if="${c.css == 'vip'}"><use href="#s-crown"/></svg>
+                    </div>
+                    <h3 th:text="${c.label}">Simple</h3>
+                    <p th:text="${c.tagline}">Économique</p>
+                    <span class="go"><svg class="ic"><use href="#s-arrow"/></svg></span>
+                </a>
+            </div>
+        </section>
+
+        <section class="sec">
+            <div class="sec-head">
+                <div><h2>Voitures populaires</h2><p>Les modèles les mieux notés par nos clients.</p></div>
+                <a class="link-arrow" th:href="@{/cars}">Voir toutes les voitures <svg class="ic"><use href="#s-arrow"/></svg></a>
+            </div>
+            <div class="cars-grid">
+                <th:block th:each="car : ${popular}">
+                    <th:block th:replace="~{fragments/cards :: carCard(${car}, ${true})}"/>
+                </th:block>
+            </div>
+        </section>
+
+        <section class="promo">
+            <div>
+                <h2>Besoin d'un chauffeur ?</h2>
+                <p>Nos chauffeurs professionnels connaissent les routes de Madagascar. Ajoutez-le en un clic lors de votre réservation.</p>
+            </div>
+            <a class="pill-btn gold" th:href="@{/cars}">Réserver maintenant <svg class="ic"><use href="#s-arrow"/></svg></a>
+        </section>
+
+        <section class="sec">
+            <div class="sec-head"><div><h2>Comment ça marche</h2><p>Réservez en trois étapes.</p></div></div>
+            <div class="steps-site">
+                <div class="step-s"><div class="n">1</div><b>Choisissez</b><span>Indiquez le lieu et les dates, puis choisissez votre voiture.</span></div>
+                <div class="step-s"><div class="n">2</div><b>Personnalisez</b><span>Avec ou sans chauffeur, assurance, GPS, siège bébé, livraison.</span></div>
+                <div class="step-s"><div class="n">3</div><b>Roulez</b><span>Nous validons votre réservation et vous remettons la voiture.</span></div>
+            </div>
+        </section>
+    </div>
+</main>
+</body>
+</html>

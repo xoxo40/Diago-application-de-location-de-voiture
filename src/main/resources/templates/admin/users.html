@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout(~{::title}, ~{::main}, 'users')}">
+<head><title>Clients · DiaGo Admin</title></head>
+<body>
+<main>
+    <div class="head"><div><h1>Clients</h1><p>Comptes inscrits sur le site.</p></div></div>
+    <div class="table-wrap">
+        <table class="data">
+            <thead><tr><th>Client</th><th>Email</th><th>Téléphone</th><th>Rôle</th></tr></thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td><div class="cell-user"><div class="avatar" th:text="${u.initials}">C</div><b th:text="${u.fullName}"></b></div></td>
+                <td th:text="${u.email}"></td>
+                <td th:text="${u.phone}"></td>
+                <td><span class="pill" th:classappend="${u.admin} ? 'role' : 'simple'" th:text="${u.admin} ? 'Administrateur' : 'Client'"></span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

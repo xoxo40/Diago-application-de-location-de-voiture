@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'cars')}">
+<head><title>Paiement · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container">
+        <div th:replace="~{fragments/cards :: steps(4)}"></div>
+        <div class="page-head"><h1>Paiement</h1><p class="muted">🔒 Paiement sécurisé (simulation pour ce projet : aucun débit réel).</p></div>
+        <form th:action="@{/booking/pay}" method="post">
+            <div class="two-col">
+                <div>
+                    <label class="pay-method" th:each="m, st : ${methods}">
+                        <input type="radio" name="method" th:value="${m}" th:checked="${m == draft.paymentMethod}">
+                        <span class="box">
+                            <span class="i" th:text="${m.icon}">📱</span>
+                            <span><b th:text="${m.label}">Mobile Money</b><br><span class="muted small" th:text="${m.description}"></span></span>
+                        </span>
+                    </label>
+
+                    <div class="pay-detail card" data-method="MOBILE_MONEY">
+                        <div class="grid-2">
+                            <div><label class="lbl">Opérateur</label>
+                                <select class="input"><option>MVola</option><option>Orange Money</option><option>Airtel Money</option></select></div>
+                            <div><label class="lbl">Numéro</label><input class="input" placeholder="034 12 345 67"></div>
+                        </div>
+                    </div>
+                    <div class="pay-detail card" data-method="CARD">
+                        <div class="form-group"><label class="lbl">Numéro de carte</label><input class="input" placeholder="4242 4242 4242 4242" autocomplete="off"></div>
+                        <div class="grid-2">
+                            <div><label class="lbl">Expiration</label><input class="input" placeholder="MM/AA" autocomplete="off"></div>
+                            <div><label class="lbl">CVC</label><input class="input" placeholder="123" autocomplete="off"></div>
+                        </div>
+                    </div>
+                    <div class="pay-detail card" data-method="ON_PICKUP">
+                        <p style="margin:0">Vous réglerez <b th:text="${@fmt.price(price.total)}"></b> au moment de la remise des clés.</p>
+                    </div>
+                </div>
+                <aside class="card sticky">
+                    <h3 th:text="${car.fullName}"></h3>
+                    <p class="muted small"><span th:text="${@fmt.date(draft.startDate)}"></span> → <span th:text="${@fmt.date(draft.endDate)}"></span> · <span th:text="${draft.mode.label}"></span></p>
+                    <div class="row between" style="margin:14px 0">
+                        <span class="muted">Montant total</span><span class="price" th:text="${@fmt.price(price.total)}"></span>
+                    </div>
+                    <button class="btn btn-primary btn-block btn-lg" type="submit">Payer et confirmer</button>
+                    <a class="btn btn-ghost btn-block" style="margin-top:10px" th:href="@{/booking/summary}">← Retour</a>
+                </aside>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

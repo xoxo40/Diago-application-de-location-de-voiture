@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'profile')}">
+<head><title>Mon profil · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container" style="max-width:720px">
+        <div class="card center">
+            <div class="avatar big" style="margin:0 auto 12px" th:text="${currentUser.initials}">AR</div>
+            <h1 style="margin-bottom:4px" th:text="${currentUser.fullName}">Aina Rakoto</h1>
+            <p class="muted" style="margin:0">📞 <span th:text="${currentUser.phone}"></span></p>
+            <p class="muted" style="margin:0">✉️ <span th:text="${currentUser.email}"></span></p>
+            <p class="small muted" style="margin-top:10px"><b th:text="${bookingCount}">0</b> réservation(s) · <b th:text="${#lists.size(currentUser.favorites)}">0</b> favori(s)</p>
+        </div>
+        <div class="card mt menu">
+            <a th:href="@{/profile/info}"><span class="i">👤</span> Mes informations <span class="go">›</span></a>
+            <a th:href="@{/bookings}"><span class="i">📅</span> Mes réservations <span class="go">›</span></a>
+            <a th:href="@{/favorites}"><span class="i">♥</span> Mes favoris <span class="go">›</span></a>
+            <a th:href="@{/profile/payments}"><span class="i">💳</span> Mes moyens de paiement <span class="go">›</span></a>
+            <a th:href="@{/profile/addresses}"><span class="i">📍</span> Mes adresses <span class="go">›</span></a>
+            <a th:href="@{/profile/settings}"><span class="i">⚙️</span> Paramètres <span class="go">›</span></a>
+            <a th:href="@{/profile/help}"><span class="i">❓</span> Aide <span class="go">›</span></a>
+        </div>
+        <form th:action="@{/logout}" method="post" class="mt">
+            <button class="btn btn-danger btn-block" type="submit">Déconnexion</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

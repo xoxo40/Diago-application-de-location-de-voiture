@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, null)}">
+<head><title>Inscription · DiaGo</title></head>
+<body>
+<main class="auth-page">
+    <section class="auth-side">
+        <h1>Rejoignez DiaGo</h1>
+        <p class="slogan">Choisissez votre route</p>
+        <p>Un compte, et toute la flotte DiaGo à portée de main : Simple, Premium ou VIP, avec ou sans chauffeur.</p>
+    </section>
+    <section class="auth-form">
+        <div class="card">
+            <h2>Créer un compte</h2>
+
+            <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+                <div class="alert err" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+                </div>
+                <div class="form-group">
+                    <label class="lbl" for="fullName">Nom complet</label>
+                    <input class="input" id="fullName" th:field="*{fullName}" placeholder="Aina Rakoto">
+                    <div class="field-err" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                </div>
+                <div class="form-group">
+                    <label class="lbl" for="phone">Numéro de téléphone</label>
+                    <input class="input" id="phone" th:field="*{phone}" placeholder="034 12 345 67">
+                    <div class="field-err" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                </div>
+                <div class="form-group">
+                    <label class="lbl" for="email">Email</label>
+                    <input class="input" type="email" id="email" th:field="*{email}" placeholder="vous@exemple.mg">
+                    <div class="field-err" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+                <div class="form-group">
+                    <label class="lbl" for="password">Mot de passe</label>
+                    <input class="input" type="password" id="password" name="password" placeholder="6 caractères minimum">
+                    <div class="field-err" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+                <div class="form-group">
+                    <label class="lbl" for="confirmPassword">Confirmer le mot de passe</label>
+                    <input class="input" type="password" id="confirmPassword" name="confirmPassword">
+                    <div class="field-err" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                </div>
+                <button class="btn btn-primary btn-block" type="submit">Créer mon compte</button>
+            </form>
+            <p class="center muted small mt">Déjà inscrit ? <a th:href="@{/login}">Se connecter</a></p>
+        </div>
+    </section>
+</main>
+</body>
+</html>

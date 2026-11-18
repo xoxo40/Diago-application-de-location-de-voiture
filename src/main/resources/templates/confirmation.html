@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'bookings')}">
+<head><title>Réservation confirmée · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container" style="max-width:640px">
+        <div class="card center">
+            <div class="success-ic">✓</div>
+            <h1>Réservation confirmée !</h1>
+            <p class="muted">Misaotra ! Votre numéro de réservation :</p>
+            <p class="price" style="font-size:1.6rem" th:text="${booking.reference}">DGO-2026-1001</p>
+            <dl class="kv" style="text-align:left;margin:20px 0">
+                <dt>Voiture</dt><dd th:text="${booking.car.fullName}"></dd>
+                <dt>Date</dt><dd><span th:text="${@fmt.date(booking.startDate)}"></span> → <span th:text="${@fmt.date(booking.endDate)}"></span></dd>
+                <dt>Heure</dt><dd><span th:text="${@fmt.time(booking.startTime)}"></span> → <span th:text="${@fmt.time(booking.endTime)}"></span></dd>
+                <dt>Lieu</dt><dd th:text="${booking.pickupLocation}"></dd>
+                <dt>Mode</dt><dd th:text="${booking.mode.icon + ' ' + booking.mode.label}"></dd>
+                <dt>Paiement</dt><dd th:text="${booking.paymentMethod.label}"></dd>
+                <dt>Montant</dt><dd th:text="${@fmt.price(booking.totalPrice)}"></dd>
+            </dl>
+            <a class="btn btn-primary btn-block" th:href="@{/bookings/{id}(id=${booking.id})}">Voir ma réservation</a>
+            <a class="btn btn-ghost btn-block" style="margin-top:10px" th:href="@{/home}">Retour à l'accueil</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

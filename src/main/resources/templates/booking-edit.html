@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'bookings')}">
+<head><title>Modifier la réservation · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container" style="max-width:760px">
+        <p><a th:href="@{/bookings/{id}(id=${booking.id})}">← Retour à la réservation</a></p>
+        <div class="page-head">
+            <h1>Modifier la réservation</h1>
+            <p class="muted"><span th:text="${booking.car.fullName}"></span> · <span th:text="${booking.reference}"></span> — le prix sera recalculé automatiquement.</p>
+        </div>
+        <form class="card" th:action="@{/bookings/{id}/edit(id=${booking.id})}" method="post">
+            <div class="form-group">
+                <label class="lbl">📍 Lieu de prise en charge</label>
+                <input class="input" name="pickupLocation" th:value="${booking.pickupLocation}" required>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label class="lbl">Date de départ</label><input class="input" type="date" name="startDate" th:value="${booking.startDate}" required></div>
+                <div class="form-group"><label class="lbl">Heure</label><input class="input" type="time" name="startTime" th:value="${booking.startTime}" required></div>
+                <div class="form-group"><label class="lbl">Date de retour</label><input class="input" type="date" name="endDate" th:value="${booking.endDate}" required></div>
+                <div class="form-group"><label class="lbl">Heure</label><input class="input" type="time" name="endTime" th:value="${booking.endTime}" required></div>
+            </div>
+            <div class="mode-cards" style="margin-bottom:16px">
+                <label class="mode-card">
+                    <input type="radio" name="mode" value="WITH_DRIVER" th:checked="${booking.mode.name() == 'WITH_DRIVER'}">
+                    <span class="box"><span class="i">🧑‍✈️</span><b>Avec chauffeur</b></span>
+                </label>
+                <label class="mode-card">
+                    <input type="radio" name="mode" value="WITHOUT_DRIVER" th:checked="${booking.mode.name() == 'WITHOUT_DRIVER'}">
+                    <span class="box"><span class="i">🔑</span><b>Sans chauffeur</b></span>
+                </label>
+            </div>
+            <label class="opt"><span class="ico">🛡️</span><span class="txt"><b>Assurance tous risques</b></span>
+                <span class="switch"><input type="checkbox" name="insurance" th:checked="${booking.insurance}"><i></i></span></label>
+            <label class="opt"><span class="ico">🗺️</span><span class="txt"><b>GPS intégré</b></span>
+                <span class="switch"><input type="checkbox" name="gps" th:checked="${booking.gps}"><i></i></span></label>
+            <label class="opt"><span class="ico">👶</span><span class="txt"><b>Siège bébé</b></span>
+                <span class="switch"><input type="checkbox" name="babySeat" th:checked="${booking.babySeat}"><i></i></span></label>
+            <label class="opt"><span class="ico">🚚</span><span class="txt"><b>Livraison de la voiture</b></span>
+                <span class="switch"><input type="checkbox" name="delivery" th:checked="${booking.delivery}"><i></i></span></label>
+            <label class="opt"><span class="ico">🏠</span><span class="txt"><b>Retour à domicile</b></span>
+                <span class="switch"><input type="checkbox" name="returnHome" th:checked="${booking.returnHome}"><i></i></span></label>
+            <button class="btn btn-primary btn-block btn-lg" type="submit">Enregistrer les modifications</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

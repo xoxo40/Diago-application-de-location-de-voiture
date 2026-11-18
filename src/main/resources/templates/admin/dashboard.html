@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout(~{::title}, ~{::main}, 'dashboard')}">
+<head><title>Tableau de bord · DiaGo Admin</title></head>
+<body>
+<main>
+    <div class="head">
+        <div><h1>Tableau de bord</h1><p>Vue d'ensemble de l'activité DiaGo.</p></div>
+    </div>
+
+    <div class="kpis">
+        <div class="card kpi"><div class="ic g"><svg class="i"><use href="#i-cash"/></svg></div>
+            <div><b th:text="${@fmt.price(stats.revenue)}">0 Ar</b><span>Chiffre d'affaires</span></div></div>
+        <div class="card kpi"><div class="ic y"><svg class="i"><use href="#i-clock"/></svg></div>
+            <div><b th:text="${stats.pending}">0</b><span>Réservations à valider</span></div></div>
+        <div class="card kpi"><div class="ic b"><svg class="i"><use href="#i-calendar"/></svg></div>
+            <div><b th:text="${stats.bookings}">0</b><span>Réservations (<span th:text="${stats.activeBookings}">0</span> en cours)</span></div></div>
+        <div class="card kpi"><div class="ic g"><svg class="i"><use href="#i-car"/></svg></div>
+            <div><b th:text="${stats.cars}">0</b><span>Voitures</span></div></div>
+        <div class="card kpi"><div class="ic r"><svg class="i"><use href="#i-users"/></svg></div>
+            <div><b th:text="${stats.clients}">0</b><span>Clients · <span th:text="${stats.drivers}">0</span> chauffeurs</span></div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px">
+        <h3>À valider maintenant</h3>
+        <div class="todo">
+            <div class="todo-item" th:each="b : ${pendingList}">
+                <div class="grow">
+                    <div class="bk-ref"><span th:text="${b.reference}"></span> · <span th:text="${b.user.fullName}"></span></div>
+                    <div class="bk-sub"><span th:text="${b.car.fullName}"></span> ·
+                        <span th:text="${@fmt.date(b.startDate)}"></span> → <span th:text="${@fmt.date(b.endDate)}"></span> ·
+                        <span th:text="${@fmt.price(b.totalPrice)}"></span></div>
+                </div>
+                <div class="deliv" th:if="${b.delivery}"><svg class="i"><use href="#i-truck"/></svg>Livraison demandée</div>
+                <div th:replace="~{fragments/admin-parts :: actions(${b})}"></div>
+            </div>
+            <div class="empty" th:if="${#lists.isEmpty(pendingList)}">Aucune réservation en attente. Tout est à jour.</div>
+        </div>
+    </div>
+
+    <h3 style="margin-bottom:12px">Dernières réservations</h3>
+    <div class="table-wrap">
+        <table class="data">
+            <thead><tr><th>Réf.</th><th>Client</th><th>Voiture</th><th>Dates</th><th>Étape</th><th>Total</th></tr></thead>
+            <tbody>
+            <tr th:each="b : ${latest}">
+                <td class="bk-ref" th:text="${b.reference}"></td>
+                <td th:text="${b.user.fullName}"></td>
+                <td th:text="${b.car.fullName}"></td>
+                <td><span th:text="${@fmt.date(b.startDate)}"></span> → <span th:text="${@fmt.date(b.endDate)}"></span></td>
+                <td><span class="pill" th:classappend="${b.fulfillment.css}" th:text="${b.fulfillment.label}"></span></td>
+                <td th:text="${@fmt.price(b.totalPrice)}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(latest)}"><td colspan="6" class="empty">Aucune réservation.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

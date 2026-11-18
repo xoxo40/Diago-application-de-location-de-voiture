@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="tabs(tab)" class="admin-tabs">
+    <a th:href="@{/admin}" th:classappend="${tab == 'dashboard'} ? 'on'">📊 Tableau de bord</a>
+    <a th:href="@{/admin/cars}" th:classappend="${tab == 'cars'} ? 'on'">🚗 Voitures</a>
+    <a th:href="@{/admin/drivers}" th:classappend="${tab == 'drivers'} ? 'on'">🧑‍✈️ Chauffeurs</a>
+    <a th:href="@{/admin/bookings}" th:classappend="${tab == 'bookings'} ? 'on'">📅 Réservations</a>
+    <a th:href="@{/admin/users}" th:classappend="${tab == 'users'} ? 'on'">👥 Clients</a>
+</nav>
+</body>
+</html>

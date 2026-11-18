@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout(~{::title}, ~{::main}, 'bookings')}">
+<head><title>Réservations · DiaGo Admin</title></head>
+<body>
+<main>
+    <div class="head">
+        <div><h1>Réservations</h1><p>Validez les demandes, suivez la livraison jusqu'au client.</p></div>
+    </div>
+    <div class="table-wrap">
+        <table class="data">
+            <thead><tr><th>Réf.</th><th>Client</th><th>Voiture</th><th>Dates</th><th>Livraison</th><th>Étape</th><th>Total</th><th>Actions</th></tr></thead>
+            <tbody>
+            <tr th:each="b : ${bookings}" th:classappend="${b.clientConfirmedAt != null and b.fulfillment.name() == 'DELIVERED'} ? 'hl'">
+                <td class="bk-ref" th:text="${b.reference}"></td>
+                <td>
+                    <div class="cell-user">
+                        <div class="avatar" th:text="${b.user.initials}">C</div>
+                        <div><b th:text="${b.user.fullName}"></b><div class="bk-sub" th:text="${b.user.phone}"></div></div>
+                    </div>
+                </td>
+                <td><span th:text="${b.car.fullName}"></span>
+                    <div class="bk-sub"><span th:text="${b.mode.label}"></span><span th:if="${b.driver != null}"> · <span th:text="${b.driver.name}"></span></span></div></td>
+                <td><span th:text="${@fmt.date(b.startDate)}"></span> → <span th:text="${@fmt.date(b.endDate)}"></span></td>
+                <td>
+                    <div class="deliv" th:if="${b.delivery}"><svg class="i"><use href="#i-truck"/></svg>À domicile</div>
+                    <div class="deliv" th:unless="${b.delivery}"><svg class="i"><use href="#i-key"/></svg>Retrait</div>
+                    <div class="bk-sub" th:if="${b.pickupLocation != null}"><svg class="i" style="width:12px;height:12px"><use href="#i-pin"/></svg> <span th:text="${b.pickupLocation}"></span></div>
+                </td>
+                <td>
+                    <span class="pill" th:classappend="${b.fulfillment.css}" th:text="${b.fulfillment.label}"></span>
+                    <div class="ok-tag" th:if="${b.clientConfirmedAt != null}">
+                        <svg class="i"><use href="#i-ok"/></svg>Reçue par le client · <span th:text="${#temporals.format(b.clientConfirmedAt, 'dd/MM HH:mm')}">24/10 13:40</span>
+                    </div>
+                </td>
+                <td th:text="${@fmt.price(b.totalPrice)}"></td>
+                <td><div th:replace="~{fragments/admin-parts :: actions(${b})}"></div></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(bookings)}"><td colspan="8" class="empty">Aucune réservation.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

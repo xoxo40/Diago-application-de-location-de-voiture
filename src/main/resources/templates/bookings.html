@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'bookings')}">
+<head><title>Mes réservations · DiaGo</title></head>
+<body>
+<main class="bk">
+    <div class="wrap">
+        <div class="bl-head">
+            <h1>Mes réservations</h1>
+            <p>Suivez vos locations et leur livraison.</p>
+        </div>
+
+        <div class="bl-empty" th:if="${total == 0}">
+            <span class="bl-empty-ic"><svg class="ic"><use href="#s-car"/></svg></span>
+            <h3>Aucune réservation pour le moment</h3>
+            <p>Choisissez une voiture et réservez en quelques clics.</p>
+            <a class="rcv-btn" th:href="@{/search}">Rechercher une voiture <svg class="ic"><use href="#s-arrow"/></svg></a>
+        </div>
+
+        <th:block th:replace="~{bookings :: group('En cours', ${ongoing})}"/>
+        <th:block th:replace="~{bookings :: group('À venir', ${upcoming})}"/>
+        <th:block th:replace="~{bookings :: group('Terminées', ${completed})}"/>
+        <th:block th:replace="~{bookings :: group('Annulées', ${cancelled})}"/>
+    </div>
+</main>
+
+<!-- Groupe de réservations -->
+<th:block th:fragment="group(title, items)">
+    <th:block th:if="${!#lists.isEmpty(items)}">
+        <div class="bl-sec"><b th:text="${title}">Groupe</b><span th:text="${#lists.size(items)}">1</span></div>
+        <a class="bl-card" th:each="b : ${items}" th:href="@{/bookings/{id}(id=${b.id})}"
+           th:with="refused=${b.fulfillment.name() == 'REJECTED'}">
+            <div class="bl-img"><img th:src="${b.car.imageUrl}" th:alt="${b.car.fullName}" onerror="this.style.display='none'"></div>
+            <div class="bl-body">
+                <div class="bl-top">
+                    <b th:text="${b.car.fullName}">Toyota RAV4</b>
+                    <span class="bk-pill sm" th:classappend="${b.cancelled and !refused} ? 'rejected' : ${b.fulfillment.css}"
+                          th:text="${b.cancelled and !refused} ? 'Annulée' : ${b.fulfillment.label}">Validée</span>
+                </div>
+                <div class="bl-meta">
+                    <span><svg class="ic"><use href="#s-calendar"/></svg><span th:text="${@fmt.date(b.startDate)}"></span> → <span th:text="${@fmt.date(b.endDate)}"></span></span>
+                    <span><svg class="ic"><use href="#s-pin"/></svg><span th:text="${b.pickupLocation}"></span></span>
+                    <span><svg class="ic" th:if="${b.mode.name() == 'WITH_DRIVER'}"><use href="#s-driver"/></svg><svg class="ic" th:if="${b.mode.name() != 'WITH_DRIVER'}"><use href="#s-key"/></svg><span th:text="${b.mode.label}"></span></span>
+                </div>
+                <div class="bl-bot">
+                    <span class="bl-price" th:text="${@fmt.price(b.totalPrice)}">450 000 Ar</span>
+                    <span class="bl-tag" th:if="${b.receivable}"><svg class="ic"><use href="#s-truck"/></svg>En livraison</span>
+                    <span class="bl-go">Voir le suivi <svg class="ic"><use href="#s-arrow"/></svg></span>
+                </div>
+            </div>
+        </a>
+    </th:block>
+</th:block>
+</body>
+</html>

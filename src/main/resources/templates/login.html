@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, null)}">
+<head><title>Connexion · DiaGo</title></head>
+<body>
+<main class="auth-page">
+    <section class="auth-side">
+        <h1>Bon retour !</h1>
+        <p class="slogan">Safidio ny lalanao, DiaGo no mitondra anao</p>
+        <p>Retrouvez vos réservations, vos voitures favorites et partez l'esprit léger.</p>
+    </section>
+    <section class="auth-form">
+        <div class="card">
+            <h2>Connexion</h2>
+            <p class="muted">Email ou numéro de téléphone</p>
+            <div class="alert err" th:if="${param.error}">Identifiant ou mot de passe incorrect.</div>
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label class="lbl" for="identifier">Email ou téléphone</label>
+                    <input class="input" id="identifier" name="identifier" placeholder="demo@diago.mg ou 034 12 345 67" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label class="lbl" for="password">Mot de passe</label>
+                    <input class="input" type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+                <p class="small" style="text-align:right;margin-top:-6px"><a th:href="@{/forgot-password}">Mot de passe oublié ?</a></p>
+                <button class="btn btn-primary btn-block" type="submit">Se connecter</button>
+            </form>
+            <p class="center muted small mt">Pas encore de compte ?</p>
+            <a class="btn btn-ghost btn-block" th:href="@{/register}">Créer un compte</a>
+            <p class="center muted small mt">Compte de démonstration : <b>demo@diago.mg</b> / <b>demo1234</b></p>
+        </div>
+    </section>
+</main>
+</body>
+</html>

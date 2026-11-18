@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'profile')}">
+<head><title>Mes informations · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container" style="max-width:600px">
+        <p><a th:href="@{/profile}">← Profil</a></p>
+        <h1>Mes informations</h1>
+        <form class="card" th:action="@{/profile/info}" method="post">
+            <div class="form-group"><label class="lbl">Nom complet</label><input class="input" name="fullName" th:value="${currentUser.fullName}" required></div>
+            <div class="form-group"><label class="lbl">Téléphone</label><input class="input" name="phone" th:value="${currentUser.phone}" required></div>
+            <div class="form-group"><label class="lbl">Email</label><input class="input" type="email" th:value="${currentUser.email}" readonly></div>
+            <button class="btn btn-primary btn-block" type="submit">Enregistrer</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

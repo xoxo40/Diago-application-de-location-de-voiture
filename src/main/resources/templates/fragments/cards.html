@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Carte voiture : car = Car, available = boolean -->
+<article th:fragment="carCard(car, available)" class="vcard" th:classappend="${!available} ? 'off'">
+    <div class="vimg">
+        <img th:src="${car.imageUrl}" th:alt="${car.fullName}" loading="lazy" onerror="this.style.display='none'">
+        <span class="vbadge" th:classappend="${car.category.css}" th:text="${car.category.label}">Simple</span>
+        <form class="vheart" th:if="${currentUser != null}" th:action="@{/favorites/{id}/toggle(id=${car.id})}" method="post">
+            <input type="hidden" name="redirect" th:value="${currentUri}">
+            <button type="submit" th:classappend="${currentUser.favorites.contains(car)} ? 'on'"
+                    th:title="${currentUser.favorites.contains(car)} ? 'Retirer des favoris' : 'Ajouter aux favoris'">
+                <svg class="ic"><use href="#s-heart"/></svg>
+            </button>
+        </form>
+    </div>
+    <div class="vbody">
+        <div class="vtop">
+            <h3 th:text="${car.fullName}">Toyota Corolla</h3>
+            <span class="vrate"><svg class="ic"><use href="#s-star"/></svg><span th:text="${@fmt.stars(car.rating)}">4.5</span></span>
+        </div>
+        <div class="vspecs">
+            <span><svg class="ic"><use href="#s-users"/></svg><span th:text="${car.seats} + ' places'">5 places</span></span>
+            <span><svg class="ic"><use href="#s-gauge"/></svg><span th:text="${car.transmission.label}">Manuelle</span></span>
+            <span><svg class="ic"><use href="#s-fuel"/></svg><span th:text="${car.fuel.label}">Essence</span></span>
+        </div>
+        <div class="vfoot">
+            <div>
+                <div class="vprice"><span th:text="${@fmt.price(car.pricePerDay)}">45 000 Ar</span> <small>/ jour</small></div>
+                <div class="vav" th:classappend="${!available} ? 'no'" th:text="${available} ? 'Disponible' : 'Indisponible'">Disponible</div>
+            </div>
+            <a class="vbtn" th:href="@{/cars/{id}(id=${car.id})}" th:classappend="${!available} ? 'disabled'">Voir</a>
+        </div>
+    </div>
+</article>
+
+<!-- Barre d'étapes du tunnel de réservation : step = 1..4 -->
+<div th:fragment="steps(step)" class="steps">
+    <span th:classappend="${step > 1} ? 'done' : (${step == 1} ? 'on')">1 · Voiture</span>
+    <span th:classappend="${step > 2} ? 'done' : (${step == 2} ? 'on')">2 · Options</span>
+    <span th:classappend="${step > 3} ? 'done' : (${step == 3} ? 'on')">3 · Récapitulatif</span>
+    <span th:classappend="${step > 4} ? 'done' : (${step == 4} ? 'on')">4 · Paiement</span>
+</div>
+
+</body>
+</html>

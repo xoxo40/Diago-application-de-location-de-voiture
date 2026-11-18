@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout(~{::title}, ~{::main}, 'drivers')}">
+<head><title>Chauffeurs · DiaGo Admin</title></head>
+<body>
+<main>
+    <div class="head">
+        <div><h1>Chauffeurs</h1><p>Affectés automatiquement aux réservations « avec chauffeur ».</p></div>
+        <button class="btn btn-primary" type="button" onclick="openDriver(null)"><svg class="i"><use href="#i-plus"/></svg>Ajouter un chauffeur</button>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data">
+            <thead><tr><th>Chauffeur</th><th>Note</th><th>Téléphone</th><th>Actions</th></tr></thead>
+            <tbody>
+            <tr th:each="d : ${drivers}">
+                <td><div class="cell-user">
+                    <img th:if="${d.photoUrl != null and !d.photoUrl.isBlank()}" th:src="${d.photoUrl}" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'">
+                    <b th:text="${d.name}"></b></div></td>
+                <td th:text="${@fmt.stars(d.rating)} + ' / 5'"></td>
+                <td th:text="${d.phone}"></td>
+                <td><div class="actions">
+                    <button class="btn btn-sm" type="button"
+                            th:data-id="${d.id}" th:data-name="${d.name}" th:data-phone="${d.phone}"
+                            th:data-rating="${d.rating}" th:data-photo="${d.photoUrl}" onclick="openDriver(this)">
+                        <svg class="i"><use href="#i-edit"/></svg>Modifier</button>
+                    <form th:action="@{/admin/drivers/{id}/delete(id=${d.id})}" method="post" data-confirm="Supprimer ce chauffeur ?">
+                        <button class="btn btn-sm btn-bad" type="submit"><svg class="i"><use href="#i-trash"/></svg>Supprimer</button>
+                    </form>
+                </div></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(drivers)}"><td colspan="4" class="empty">Aucun chauffeur.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <dialog id="driverDlg">
+        <form th:action="@{/admin/drivers}" method="post">
+            <h3 id="driverTitle">Chauffeur</h3>
+            <input type="hidden" name="id" id="dId">
+            <div class="fg"><label class="lbl">Nom</label><input class="input" name="name" id="dName" required></div>
+            <div class="fg"><label class="lbl">Téléphone</label><input class="input" name="phone" id="dPhone" placeholder="+261 34 00 000 00" required></div>
+            <div class="grid-2">
+                <div class="fg"><label class="lbl">Note (0 à 5)</label><input class="input" type="number" name="rating" id="dRating" step="0.1" min="0" max="5" value="4.5" required></div>
+                <div class="fg"><label class="lbl">Photo (URL)</label><input class="input" name="photoUrl" id="dPhoto" placeholder="https://..."></div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" type="submit"><svg class="i"><use href="#i-check"/></svg>Enregistrer</button>
+                <button class="btn" type="button" onclick="document.getElementById('driverDlg').close()">Annuler</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        function openDriver(btn) {
+            var g = function (id) { return document.getElementById(id); };
+            g('driverTitle').textContent = btn ? 'Modifier le chauffeur' : 'Ajouter un chauffeur';
+            g('dId').value = btn ? btn.dataset.id : '';
+            g('dName').value = btn ? btn.dataset.name : '';
+            g('dPhone').value = btn ? btn.dataset.phone : '';
+            g('dRating').value = btn ? btn.dataset.rating : '4.5';
+            g('dPhoto').value = btn && btn.dataset.photo ? btn.dataset.photo : '';
+            g('driverDlg').showModal();
+        }
+    </script>
+</main>
+</body>
+</html>

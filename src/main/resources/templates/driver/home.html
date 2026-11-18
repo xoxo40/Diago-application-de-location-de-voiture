@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>Mes livraisons · DiaGo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" th:href="@{/css/driver.css}">
+</head>
+<body class="dv">
+<div class="dv-top">
+    <div><b th:text="${driver.name}">Chauffeur</b><small>Espace chauffeur DiaGo</small></div>
+    <form th:action="@{/driver/logout}" method="post"><button type="submit">Déconnexion</button></form>
+</div>
+
+<div class="dv-wrap">
+    <div class="dv-msg ok" th:if="${success}" th:text="${success}"></div>
+    <div class="dv-msg ko" th:if="${error}" th:text="${error}"></div>
+
+    <div class="dv-card">
+        <h2>Partage de position</h2>
+        <p>Pendant une livraison, le client voit votre voiture avancer sur la carte.</p>
+        <div class="dv-row">
+            <button class="dv-btn" id="btnShare" type="button">Partager ma position</button>
+            <button class="dv-btn alt" id="btnSim" type="button">Simuler un trajet</button>
+        </div>
+        <div class="dv-st"><span class="dv-dot" id="dot"></span><span id="status">Position non partagée.</span></div>
+    </div>
+
+    <h2 style="margin:6px 0 12px;font-size:18px">Mes livraisons</h2>
+    <div class="dv-card dv-empty" th:if="${#lists.isEmpty(todo)}">Aucune livraison pour le moment.</div>
+
+    <div class="dv-card dv-m" th:each="b : ${todo}">
+        <div class="dv-h">
+            <div>
+                <h3 th:text="${b.car.fullName}">Toyota RAV4</h3>
+                <span class="ref" th:text="'Réservation ' + ${b.reference}">DG-0001</span>
+            </div>
+            <span class="dv-tag" th:classappend="${b.fulfillment.name() == 'IN_DELIVERY'} ? 'go' : (${b.fulfillment.name() == 'DELIVERED'} ? 'ok' : '')"
+                  th:text="${b.fulfillment.label}">Validée</span>
+        </div>
+        <ul>
+            <li><span>Lieu : </span><b th:text="${b.pickupLocation}">Ivandry</b></li>
+            <li><span>Départ : </span><b><span th:text="${@fmt.longDate(b.startDate)}">20 octobre</span> à <span th:text="${@fmt.time(b.startTime)}">08:00</span></b></li>
+            <li><span>Retour : </span><b><span th:text="${@fmt.longDate(b.endDate)}">23 octobre</span> à <span th:text="${@fmt.time(b.endTime)}">18:00</span></b></li>
+        </ul>
+        <div th:if="${b.fulfillment.name() == 'IN_DELIVERY'}">
+            <div class="dv-map" th:attr="data-address=${b.pickupLocation}"></div>
+            <div class="dv-row dv-notice">
+                <button type="button" class="dv-btn alt" data-notice="NEAR" th:attr="data-id=${b.id}">Je suis bientôt arrivé</button>
+                <button type="button" class="dv-btn alt" data-notice="ARRIVED" th:attr="data-id=${b.id}">Je suis arrivé</button>
+            </div>
+            <p class="dv-sent" th:attr="id='sent-' + ${b.id}"
+               th:text="${b.driverNotice == null ? '' : (b.driverNotice == 'ARRIVED' ? 'Client prévenu : vous êtes arrivé.' : 'Client prévenu : vous arrivez bientôt.')}"></p>
+        </div>
+        <form th:if="${b.fulfillment.name() == 'CONFIRMED' and b.delivery}" th:action="@{/driver/bookings/{id}/depart(id=${b.id})}" method="post">
+            <button class="dv-btn" type="submit">Je pars en livraison</button>
+        </form>
+        <form th:if="${b.fulfillment.name() == 'IN_DELIVERY'}" th:action="@{/driver/bookings/{id}/delivered(id=${b.id})}" method="post"
+              onsubmit="return confirm('Confirmez-vous avoir remis la voiture au client ?')">
+            <button class="dv-btn" type="submit">J'ai remis la voiture</button>
+        </form>
+        <p th:if="${b.fulfillment.name() == 'DELIVERED'}" style="margin:0">Voiture remise au client.</p>
+        <p th:if="${b.fulfillment.name() == 'CONFIRMED' and !b.delivery}" style="margin:0">Pas de livraison à domicile pour cette réservation.</p>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    (function () {
+        var token = document.querySelector('meta[name=_csrf]').content;
+        var header = document.querySelector('meta[name=_csrf_header]').content;
+        var dot = document.getElementById('dot'), status = document.getElementById('status');
+        var btnShare = document.getElementById('btnShare'), btnSim = document.getElementById('btnSim');
+        var watchId = null, simTimer = null;
+        var views = [];
+
+        function postHeaders() {
+            var h = {'Content-Type': 'application/x-www-form-urlencoded'};
+            h[header] = token;
+            return h;
+        }
+
+        function geocode(q) {
+            return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(q))
+                .then(function (r) { return r.json(); })
+                .then(function (res) { return res.length ? [parseFloat(res[0].lat), parseFloat(res[0].lon)] : null; })
+                .catch(function () { return null; });
+        }
+
+        // Une carte par livraison en cours : adresse du client + position du chauffeur
+        document.querySelectorAll('.dv-map').forEach(function (el) {
+            var map = L.map(el).setView([-18.8792, 47.5079], 12);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {maxZoom: 19, attribution: '&copy; OpenStreetMap'}).addTo(map);
+            var v = {map: map, dest: null, me: null, fitted: false};
+            views.push(v);
+            var addr = el.getAttribute('data-address') || '';
+            geocode(addr + ', Madagascar').then(function (p) {
+                return p || geocode(addr.split(',')[0] + ', Madagascar');
+            }).then(function (p) {
+                if (!p) {
+                    var msg = document.createElement('p');
+                    msg.className = 'dv-addr';
+                    msg.textContent = 'Adresse introuvable sur la carte : ' + addr;
+                    el.parentNode.insertBefore(msg, el.nextSibling);
+                    return;
+                }
+                v.dest = L.marker(p).addTo(map).bindPopup('Livraison : ' + addr).openPopup();
+                map.setView(p, 14);
+            });
+        });
+
+        function showMe(lat, lng) {
+            views.forEach(function (v) {
+                if (!v.me) {
+                    v.me = L.circleMarker([lat, lng], {radius: 9, color: '#ffffff', weight: 3,
+                        fillColor: '#176B4D', fillOpacity: 1}).addTo(v.map).bindTooltip('Vous');
+                } else {
+                    v.me.setLatLng([lat, lng]);
+                }
+                if (!v.fitted && v.dest) {
+                    v.map.fitBounds(L.latLngBounds([lat, lng], v.dest.getLatLng()).pad(0.3));
+                    v.fitted = true;
+                }
+            });
+        }
+
+        function send(lat, lng) {
+            showMe(lat, lng);
+            return fetch('/driver/location', {method: 'POST', headers: postHeaders(),
+                body: 'lat=' + encodeURIComponent(lat) + '&lng=' + encodeURIComponent(lng)});
+        }
+        function set(on, text) { dot.classList.toggle('on', on); status.textContent = text; }
+
+        function stopAll() {
+            if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+            if (simTimer) { clearInterval(simTimer); simTimer = null; }
+            btnShare.textContent = 'Partager ma position'; btnShare.classList.remove('stop');
+            btnSim.textContent = 'Simuler un trajet'; btnSim.classList.remove('stop');
+            set(false, 'Position non partagée.');
+        }
+
+        btnShare.onclick = function () {
+            if (watchId !== null) { stopAll(); return; }
+            if (!navigator.geolocation) { set(false, "La géolocalisation n'est pas disponible."); return; }
+            stopAll();
+            watchId = navigator.geolocation.watchPosition(function (p) {
+                send(p.coords.latitude, p.coords.longitude);
+                set(true, 'Position partagée (' + p.coords.latitude.toFixed(4) + ', ' + p.coords.longitude.toFixed(4) + ')');
+            }, function (e) {
+                set(false, 'Impossible de lire la position : ' + e.message);
+            }, {enableHighAccuracy: true, maximumAge: 2000, timeout: 15000});
+            btnShare.textContent = 'Arrêter le partage'; btnShare.classList.add('stop');
+        };
+
+        // Trajet fictif dans Antananarivo, pour la démonstration (latitude, longitude, ...)
+        var route = [
+            -18.9100, 47.5250,  -18.9050, 47.5200,  -18.9000, 47.5190,  -18.8950, 47.5230,
+            -18.8900, 47.5280,  -18.8860, 47.5330,  -18.8830, 47.5380,  -18.8800, 47.5420,
+            -18.8770, 47.5460,  -18.8740, 47.5500
+        ];
+        var routeLen = route.length / 2;
+        btnSim.onclick = function () {
+            if (simTimer) { stopAll(); return; }
+            stopAll();
+            var i = 0;
+            function step() {
+                var k = (i % routeLen) * 2; i++;
+                send(route[k], route[k + 1]);
+                set(true, 'Trajet simulé en cours (point ' + (((i - 1) % routeLen) + 1) + '/' + routeLen + ')');
+            }
+            step(); simTimer = setInterval(step, 3000);
+            btnSim.textContent = 'Arrêter la simulation'; btnSim.classList.add('stop');
+        };
+
+        // Boutons « bientôt arrivé » / « arrivé » : envoyés sans recharger la page
+        document.querySelectorAll('[data-notice]').forEach(function (btn) {
+            btn.onclick = function () {
+                var id = btn.getAttribute('data-id'), type = btn.getAttribute('data-notice');
+                fetch('/driver/bookings/' + id + '/notice', {method: 'POST', headers: postHeaders(), body: 'type=' + type})
+                    .then(function (r) {
+                        var s = document.getElementById('sent-' + id);
+                        if (!s) return;
+                        s.textContent = r.ok
+                            ? (type === 'ARRIVED' ? 'Client prévenu : vous êtes arrivé.' : 'Client prévenu : vous arrivez bientôt.')
+                            : "Échec de l'envoi.";
+                    });
+            };
+        });
+    })();
+</script>
+</body>
+</html>

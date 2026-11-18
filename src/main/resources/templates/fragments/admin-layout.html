@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content, active)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:replace="${title}">DiaGo Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-dashboard" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol>
+    <symbol id="i-driver" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/><path d="M12 14v8M10 12H2.5M14 12h7.5"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></symbol>
+    <symbol id="i-done" viewBox="0 0 24 24"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></symbol>
+    <symbol id="i-cash" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+    <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></symbol>
+</svg>
+
+<div class="shell">
+    <aside class="side">
+        <div class="brand">
+            <div class="brand-logo"><svg class="i" style="width:22px;height:22px"><use href="#i-car"/></svg></div>
+            <div>DiaGo<small>Administration</small></div>
+        </div>
+
+        <div class="menu-title">Gestion</div>
+        <nav class="menu">
+            <a th:href="@{/admin}" th:classappend="${active == 'dashboard'} ? 'on'"><svg class="i"><use href="#i-dashboard"/></svg>Tableau de bord</a>
+            <a th:href="@{/admin/bookings}" th:classappend="${active == 'bookings'} ? 'on'"><svg class="i"><use href="#i-calendar"/></svg>Réservations<span class="count" id="pendingBadge" th:text="${pendingCount}" th:style="${pendingCount != null and pendingCount > 0} ? '' : 'display:none'">0</span></a>
+            <a th:href="@{/admin/cars}" th:classappend="${active == 'cars'} ? 'on'"><svg class="i"><use href="#i-car"/></svg>Voitures</a>
+            <a th:href="@{/admin/drivers}" th:classappend="${active == 'drivers'} ? 'on'"><svg class="i"><use href="#i-driver"/></svg>Chauffeurs</a>
+            <a th:href="@{/admin/users}" th:classappend="${active == 'users'} ? 'on'"><svg class="i"><use href="#i-users"/></svg>Clients</a>
+        </nav>
+
+        <div class="side-foot" th:if="${currentUser != null}">
+            <div class="me">
+                <div class="avatar" th:text="${currentUser.initials}">A</div>
+                <div><b th:text="${currentUser.fullName}">Admin</b><span>Administrateur</span></div>
+            </div>
+            <form th:action="@{/admin/logout}" method="post">
+                <button class="logout" type="submit"><svg class="i"><use href="#i-logout"/></svg>Déconnexion</button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="alert ok" th:if="${success != null}"><svg class="i"><use href="#i-ok"/></svg><span th:text="${success}"></span></div>
+        <div class="alert err" th:if="${error != null}"><svg class="i"><use href="#i-alert"/></svg><span th:text="${error}"></span></div>
+        <th:block th:replace="${content}"/>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('submit', function (e) {
+        var m = e.target.getAttribute('data-confirm');
+        if (m && !confirm(m)) e.preventDefault();
+    });
+
+    // Notification : nombre de réservations à valider, rafraîchi toutes les 15 secondes
+    function refreshBadge() {
+        fetch('/admin/pending-count', { credentials: 'same-origin' })
+            .then(function (r) { return r.ok ? r.text() : '0'; })
+            .then(function (t) {
+                var n = parseInt(t, 10) || 0, b = document.getElementById('pendingBadge');
+                if (!b) return;
+                if (n > parseInt(b.textContent, 10)) b.classList.add('pulse');
+                b.textContent = n;
+                b.style.display = n > 0 ? '' : 'none';
+            })
+            .catch(function () {});
+    }
+    setInterval(refreshBadge, 15000);
+</script>
+</body>
+</html>

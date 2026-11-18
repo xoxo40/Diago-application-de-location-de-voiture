@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'splash')}">
+<head><title>DiaGo · Location de voitures à Madagascar</title></head>
+<body>
+<main>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="s-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+        <symbol id="s-tick" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+        <symbol id="s-baby" viewBox="0 0 24 24"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></symbol>
+        <symbol id="s-home" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+        <symbol id="s-map" viewBox="0 0 24 24"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></symbol>
+        <symbol id="s-headset" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></symbol>
+        <symbol id="s-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+        <symbol id="s-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    </svg>
+
+    <!-- ============ Bannière avec diaporama ============ -->
+    <section class="hs" id="heroSlides">
+        <div class="hs-slides">
+            <div class="hs-slide" th:each="car, st : ${slides}" th:classappend="${st.first} ? 'active'">
+                <img th:src="${car.imageUrl}" alt="" onerror="this.style.display='none'">
+            </div>
+        </div>
+        <div class="hs-shade"></div>
+
+        <div class="wrap hs-in">
+            <div class="hs-text">
+                <span class="eyebrow"><svg class="ic"><use href="#s-pin"/></svg>Location de voitures à Madagascar</span>
+                <p class="slogan">« Safidio ny lalanao, DiaGo no mitondra anao »</p>
+                <h1>Louez la voiture idéale, <em>avec ou sans chauffeur</em></h1>
+                <p class="sub">Choisissez votre voiture, vos dates et vos options en quelques clics. Notre équipe valide votre réservation et peut vous livrer le véhicule à votre adresse.</p>
+                <div class="hero-cta">
+                    <a class="pill-btn gold lg" th:href="@{/register}">Créer un compte <svg class="ic"><use href="#s-arrow"/></svg></a>
+                    <a class="pill-btn ghost-w lg" th:href="@{/login}">Se connecter</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="hs-ctrl" th:if="${#lists.size(slides) > 1}">
+            <button type="button" class="hs-arrow prev" aria-label="Précédent"><svg class="ic"><use href="#s-arrow"/></svg></button>
+            <div class="hs-dots">
+                <button type="button" class="hs-dot" th:each="car, st : ${slides}" th:classappend="${st.first} ? 'on'" th:aria-label="'Photo ' + ${st.count}"></button>
+            </div>
+            <button type="button" class="hs-arrow next" aria-label="Suivant"><svg class="ic"><use href="#s-arrow"/></svg></button>
+        </div>
+
+        <div class="hs-cap" th:if="${!#lists.isEmpty(slides)}">
+            <div class="hs-cap-item" th:each="car, st : ${slides}" th:classappend="${st.first} ? 'active'">
+                <div class="cap-txt">
+                    <small th:text="${car.category.label}">Premium</small>
+                    <b th:text="${car.fullName}">Toyota RAV4</b>
+                    <span class="cap-price"><span th:text="${@fmt.price(car.pricePerDay)}">150 000 Ar</span> / jour</span>
+                </div>
+                <a class="go" th:href="@{/cars/{id}(id=${car.id})}" aria-label="Voir cette voiture"><svg class="ic"><use href="#s-arrow"/></svg></a>
+            </div>
+        </div>
+    </section>
+
+    <div class="wrap">
+        <!-- ============ Avantages ============ -->
+        <div class="strip">
+            <div class="it"><div class="pi"><svg class="ic"><use href="#s-driver"/></svg></div><div><b>Avec ou sans chauffeur</b><span>Vous choisissez</span></div></div>
+            <div class="it"><div class="pi"><svg class="ic"><use href="#s-truck"/></svg></div><div><b>Livraison à domicile</b><span>À votre adresse</span></div></div>
+            <div class="it"><div class="pi"><svg class="ic"><use href="#s-shield"/></svg></div><div><b>Assurance tous risques</b><span>En option</span></div></div>
+            <div class="it"><div class="pi"><svg class="ic"><use href="#s-check"/></svg></div><div><b>Réservation validée</b><span>Par notre équipe</span></div></div>
+        </div>
+
+        <!-- ============ Catégories en photos ============ -->
+        <section class="v-sec">
+            <div class="v-head">
+                <span class="kicker">Notre flotte</span>
+                <h2>Choisissez votre expérience</h2>
+                <p>Du trajet quotidien au voyage d'exception, une catégorie pour chaque besoin.</p>
+            </div>
+            <div class="cc-grid">
+                <a class="cc" th:each="c : ${catalog}" th:classappend="${c.category.css}" th:href="@{/login}">
+                    <img th:src="${c.image}" alt="" onerror="this.style.display='none'">
+                    <span class="cc-chip">
+                        <svg class="ic" th:if="${c.category.css == 'simple'}"><use href="#s-car"/></svg>
+                        <svg class="ic" th:if="${c.category.css == 'premium'}"><use href="#s-star"/></svg>
+                        <svg class="ic" th:if="${c.category.css == 'vip'}"><use href="#s-crown"/></svg>
+                        <span th:text="${c.count} + (${c.count} > 1 ? ' modèles' : ' modèle')">3 modèles</span>
+                    </span>
+                    <div class="cc-body">
+                        <h3 th:text="${c.category.label}">Premium</h3>
+                        <p th:text="${c.category.tagline}">Confort et élégance</p>
+                        <div class="cc-foot">
+                            <span>À partir de <b th:text="${@fmt.price(c.fromPrice)}">130 000 Ar</b> / jour</span>
+                            <span class="cc-go"><svg class="ic"><use href="#s-arrow"/></svg></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- ============ Voitures populaires ============ -->
+        <section class="v-sec" id="voitures">
+            <div class="v-head">
+                <span class="kicker">Les plus demandées</span>
+                <h2>Nos voitures populaires</h2>
+                <p>Les modèles préférés de nos clients. Connectez-vous pour voir les disponibilités.</p>
+            </div>
+            <div class="cars-grid">
+                <th:block th:each="car : ${popular}">
+                    <th:block th:replace="~{fragments/cards :: carCard(${car}, ${true})}"/>
+                </th:block>
+            </div>
+            <div class="v-more"><a class="pill-btn fill lg" th:href="@{/login}">Voir toutes les voitures <svg class="ic"><use href="#s-arrow"/></svg></a></div>
+        </section>
+
+        <!-- ============ Avec / sans chauffeur ============ -->
+        <section class="v-sec">
+            <div class="v-head">
+                <span class="kicker">Votre façon de rouler</span>
+                <h2>Avec ou sans chauffeur ?</h2>
+                <p>Deux façons de louer, le même niveau de service.</p>
+            </div>
+            <div class="dr">
+                <div class="dr-main">
+                    <div class="tabs" id="modeTabs">
+                        <button type="button" class="on" data-p="with"><svg class="ic"><use href="#s-driver"/></svg>Avec chauffeur</button>
+                        <button type="button" data-p="without"><svg class="ic"><use href="#s-key"/></svg>Sans chauffeur</button>
+                    </div>
+                    <div class="panel on" id="p-with">
+                        <h3>Installez-vous, nous conduisons</h3>
+                        <p>Un chauffeur professionnel DiaGo vous emmène où vous voulez.</p>
+                        <ul>
+                            <li><span class="tick"><svg class="ic"><use href="#s-tick"/></svg></span>Chauffeur expérimenté, qui connaît les routes de Madagascar</li>
+                            <li><span class="tick"><svg class="ic"><use href="#s-tick"/></svg></span>Ponctuel, courtois, formé aux standards DiaGo</li>
+                            <li><span class="tick"><svg class="ic"><use href="#s-tick"/></svg></span>Idéal pour les trajets d'affaires, les événements et les longs voyages</li>
+                        </ul>
+                        <div class="price-tag">+ <span th:text="${@fmt.price(driverPerDay)}">50 000 Ar</span> <small>par jour de location</small></div>
+                    </div>
+                    <div class="panel" id="p-without">
+                        <h3>Prenez le volant, en toute liberté</h3>
+                        <p>Vous conduisez à votre rythme, la voiture est à vous pour toute la durée.</p>
+                        <ul>
+                            <li><span class="tick"><svg class="ic"><use href="#s-tick"/></svg></span>Permis de conduire valide depuis plus de 2 ans</li>
+                            <li><span class="tick"><svg class="ic"><use href="#s-tick"/></svg></span>Pièce d'identité (CIN ou passeport) à la prise en charge</li>
+                            <li><span class="tick"><svg class="ic"><use href="#s-tick"/></svg></span>Restitution avec le même niveau de carburant</li>
+                        </ul>
+                        <div class="price-tag">Aucun supplément <small>seulement le prix de la voiture</small></div>
+                    </div>
+                </div>
+
+                <div class="dr-team">
+                    <h3>Nos chauffeurs</h3>
+                    <p>Affectés automatiquement à votre réservation.</p>
+                    <div class="dr-list">
+                        <div class="dr-item" th:each="d : ${drivers}">
+                            <img th:if="${d.photoUrl != null and !d.photoUrl.isBlank()}" th:src="${d.photoUrl}" alt="" onerror="this.style.display='none'">
+                            <div><b th:text="${d.name}">Rakoto Jean</b>
+                                <span><svg class="ic"><use href="#s-star"/></svg><span th:text="${@fmt.stars(d.rating)} + ' / 5'">4.9 / 5</span></span></div>
+                            <span class="dr-badge">Pro</span>
+                        </div>
+                        <div class="dr-item" th:if="${#lists.isEmpty(drivers)}"><div><b>Chauffeurs professionnels</b><span>Disponibles sur demande</span></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ Options ============ -->
+        <section class="v-sec">
+            <div class="v-head">
+                <span class="kicker">À la carte</span>
+                <h2>Personnalisez votre location</h2>
+                <p>Ajoutez seulement ce dont vous avez besoin. Les tarifs sont affichés avant de réserver.</p>
+            </div>
+            <div class="optbar">
+                <div class="o"><div class="oi"><svg class="ic"><use href="#s-shield"/></svg></div><b>Assurance</b><span>Couverture complète</span><div class="pr">+ <span th:text="${@fmt.price(insurancePerDay)}">15 000 Ar</span> / jour</div></div>
+                <div class="o"><div class="oi"><svg class="ic"><use href="#s-map"/></svg></div><b>GPS intégré</b><span>Navigation hors ligne</span><div class="pr">+ <span th:text="${@fmt.price(gpsPrice)}">5 000 Ar</span></div></div>
+                <div class="o"><div class="oi"><svg class="ic"><use href="#s-baby"/></svg></div><b>Siège bébé</b><span>Homologué sécurité</span><div class="pr">+ <span th:text="${@fmt.price(babyPrice)}">8 000 Ar</span></div></div>
+                <div class="o"><div class="oi"><svg class="ic"><use href="#s-truck"/></svg></div><b>Livraison</b><span>À votre adresse</span><div class="pr">+ <span th:text="${@fmt.price(deliveryPrice)}">20 000 Ar</span></div></div>
+                <div class="o"><div class="oi"><svg class="ic"><use href="#s-home"/></svg></div><b>Retour à domicile</b><span>Reprise chez vous</span><div class="pr">+ <span th:text="${@fmt.price(returnPrice)}">20 000 Ar</span></div></div>
+            </div>
+        </section>
+
+        <!-- ============ Étapes ============ -->
+        <section class="v-sec" id="comment">
+            <div class="v-head">
+                <span class="kicker">Simple et rapide</span>
+                <h2>Comment ça marche</h2>
+                <p>De la recherche à la remise des clés, en quatre étapes.</p>
+            </div>
+            <div class="tl">
+                <div class="st"><div class="ball"><svg class="ic"><use href="#s-search"/></svg><span class="num">1</span></div><b>Choisissez</b><span class="d">Indiquez le lieu et les dates, puis sélectionnez votre voiture.</span></div>
+                <div class="st"><div class="ball"><svg class="ic"><use href="#s-sliders"/></svg><span class="num">2</span></div><b>Personnalisez</b><span class="d">Avec ou sans chauffeur, assurance, GPS, siège bébé, livraison.</span></div>
+                <div class="st"><div class="ball"><svg class="ic"><use href="#s-check"/></svg><span class="num">3</span></div><b>Nous validons</b><span class="d">Notre équipe confirme votre réservation rapidement.</span></div>
+                <div class="st"><div class="ball"><svg class="ic"><use href="#s-key"/></svg><span class="num">4</span></div><b>Roulez</b><span class="d">Récupérez la voiture, ou faites-vous livrer à votre adresse.</span></div>
+            </div>
+        </section>
+
+        <!-- ============ FAQ ============ -->
+        <section class="v-sec" id="faq">
+            <div class="v-head">
+                <span class="kicker">Questions fréquentes</span>
+                <h2>Vous avez une question ?</h2>
+                <p>Voici les réponses aux questions les plus posées.</p>
+            </div>
+            <div class="faq">
+                <details open>
+                    <summary>Quels documents faut-il pour louer ?<span class="ch"><svg class="ic"><use href="#s-chev"/></svg></span></summary>
+                    <div class="ans">Pour une location sans chauffeur, il faut un permis de conduire valide depuis plus de 2 ans et une pièce d'identité (CIN ou passeport) à la prise en charge. Avec chauffeur, aucun permis n'est demandé.</div>
+                </details>
+                <details>
+                    <summary>Comment puis-je payer ?<span class="ch"><svg class="ic"><use href="#s-chev"/></svg></span></summary>
+                    <div class="ans">Par Mobile Money (MVola, Orange Money ou Airtel Money), par carte bancaire (Visa ou Mastercard), ou directement à la prise en charge du véhicule.</div>
+                </details>
+                <details>
+                    <summary>Puis-je modifier ou annuler ma réservation ?<span class="ch"><svg class="ic"><use href="#s-chev"/></svg></span></summary>
+                    <div class="ans">Oui. Depuis « Mes réservations », vous pouvez modifier ou annuler tant que la location n'a pas commencé.</div>
+                </details>
+                <details>
+                    <summary>La voiture peut-elle être livrée chez moi ?<span class="ch"><svg class="ic"><use href="#s-chev"/></svg></span></summary>
+                    <div class="ans">Oui, avec l'option « Livraison », nous apportons la voiture à l'adresse que vous indiquez. L'option « Retour à domicile » permet aussi de la faire récupérer chez vous.</div>
+                </details>
+                <details>
+                    <summary>Qui valide ma réservation ?<span class="ch"><svg class="ic"><use href="#s-chev"/></svg></span></summary>
+                    <div class="ans">Chaque demande est examinée et validée par l'équipe DiaGo. Vous suivez l'avancement (validée, en livraison, remise) depuis votre espace.</div>
+                </details>
+            </div>
+        </section>
+
+        <!-- ============ Appel à l'action ============ -->
+        <section class="cta2">
+            <img th:if="${!#lists.isEmpty(slides)}" th:src="${slides[slides.size() - 1].imageUrl}" alt="" onerror="this.style.display='none'">
+            <h2>Prêt à prendre la route ?</h2>
+            <p>Créez votre compte gratuitement et réservez votre prochaine voiture en quelques minutes.</p>
+            <div class="hero-cta">
+                <a class="pill-btn gold lg" th:href="@{/register}">Créer un compte <svg class="ic"><use href="#s-arrow"/></svg></a>
+                <a class="pill-btn ghost-w lg" th:href="@{/login}">J'ai déjà un compte</a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Diaporama de la bannière
+        (function () {
+            var root = document.getElementById('heroSlides');
+            if (!root) return;
+            var slides = root.querySelectorAll('.hs-slide'),
+                caps = root.querySelectorAll('.hs-cap-item'),
+                dots = root.querySelectorAll('.hs-dot'),
+                i = 0, timer;
+            function go(n) {
+                if (!slides.length) return;
+                slides[i].classList.remove('active');
+                if (caps[i]) caps[i].classList.remove('active');
+                if (dots[i]) dots[i].classList.remove('on');
+                i = (n + slides.length) % slides.length;
+                slides[i].classList.add('active');
+                if (caps[i]) caps[i].classList.add('active');
+                if (dots[i]) dots[i].classList.add('on');
+            }
+            function start() { stop(); if (slides.length > 1) timer = setInterval(function () { go(i + 1); }, 5500); }
+            function stop() { if (timer) clearInterval(timer); }
+            var prev = root.querySelector('.hs-arrow.prev'), next = root.querySelector('.hs-arrow.next');
+            if (prev) prev.addEventListener('click', function () { go(i - 1); start(); });
+            if (next) next.addEventListener('click', function () { go(i + 1); start(); });
+            dots.forEach(function (d, k) { d.addEventListener('click', function () { go(k); start(); }); });
+            start();
+        })();
+
+        // Onglets avec / sans chauffeur
+        (function () {
+            var tabs = document.querySelectorAll('#modeTabs button');
+            tabs.forEach(function (b) {
+                b.addEventListener('click', function () {
+                    tabs.forEach(function (x) { x.classList.toggle('on', x === b); });
+                    document.querySelectorAll('.dr-main .panel').forEach(function (p) {
+                        p.classList.toggle('on', p.id === 'p-' + b.dataset.p);
+                    });
+                });
+            });
+        })();
+    </script>
+</main>
+</body>
+</html>

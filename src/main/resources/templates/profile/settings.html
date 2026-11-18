@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'profile')}">
+<head><title>Paramètres · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container" style="max-width:600px">
+        <p><a th:href="@{/profile}">← Profil</a></p>
+        <h1>Paramètres</h1>
+        <div class="card">
+            <dl class="kv">
+                <dt>Langue</dt><dd>Français</dd>
+                <dt>Devise</dt><dd>Ariary (Ar)</dd>
+                <dt>Version</dt><dd>DiaGo Web 1.0</dd>
+            </dl>
+        </div>
+    </div>
+</main>
+</body>
+</html>

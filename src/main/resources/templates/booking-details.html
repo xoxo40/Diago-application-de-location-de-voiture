@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'bookings')}">
+<head><title>Détails de la réservation · DiaGo</title></head>
+<body>
+<main class="bk">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="b-back" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+        <symbol id="b-doc" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+        <symbol id="b-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+        <symbol id="b-flag" viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/></symbol>
+        <symbol id="b-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol>
+        <symbol id="b-tick" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    </svg>
+
+    <div class="wrap">
+        <a class="fx-back" th:href="@{/bookings}"><svg class="ic"><use href="#b-back"/></svg>Mes réservations</a>
+
+        <div class="bk-head">
+            <div>
+                <span class="fx-sub">Réservation <span th:text="${booking.reference}">DG-0001</span></span>
+                <h1 th:text="${booking.car.fullName}">Toyota RAV4</h1>
+            </div>
+            <span class="bk-pill" th:classappend="${booking.fulfillment.css}" th:text="${booking.fulfillment.label}">Validée</span>
+        </div>
+
+        <!-- ============ Suivi ============ -->
+        <div class="trk-card" th:if="${booking.fulfillment.name() != 'REJECTED' and !booking.cancelled}">
+            <div class="trk-title"><b>Suivi de votre réservation</b></div>
+            <ol class="trk" th:with="s=${booking.fulfillmentStep}">
+                <li th:classappend="${(s >= 1 ? 'done' : '') + (s == 1 ? ' now' : '')}">
+                    <span class="dot"><svg class="ic"><use href="#b-doc"/></svg></span>
+                    <b>Demande envoyée</b><small>Bien reçue par DiaGo</small>
+                </li>
+                <li th:classappend="${(s >= 2 ? 'done' : '') + (s == 2 ? ' now' : '')}">
+                    <span class="dot"><svg class="ic"><use href="#b-ok"/></svg></span>
+                    <b>Validée</b><small>Confirmée par l'équipe</small>
+                </li>
+                <li th:if="${booking.delivery}" th:classappend="${(s >= 3 ? 'done' : '') + (s == 3 ? ' now' : '')}">
+                    <span class="dot"><svg class="ic"><use href="#s-truck"/></svg></span>
+                    <b>En livraison</b><small>Votre voiture est en route</small>
+                </li>
+                <li th:classappend="${(s >= 4 ? 'done' : '') + (s == 4 ? ' now' : '')}">
+                    <span class="dot"><svg class="ic"><use href="#s-key"/></svg></span>
+                    <b>Remise au client</b><small>La voiture est avec vous</small>
+                </li>
+                <li th:classappend="${(s >= 5 ? 'done' : '') + (s == 5 ? ' now' : '')}">
+                    <span class="dot"><svg class="ic"><use href="#b-flag"/></svg></span>
+                    <b>Terminée</b><small>Location clôturée</small>
+                </li>
+            </ol>
+
+            <!-- Carte : suivi du chauffeur en direct -->
+            <div class="lv" th:if="${booking.receivable and booking.driver != null}">
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+                <div class="lv-notice" id="lvNotice" hidden></div>
+                <div class="lv-map" id="lvMap"
+                     th:data-url="@{/bookings/{id}/driver-location(id=${booking.id})}"
+                     th:data-address="${booking.pickupLocation}"
+                     th:data-driver="${booking.driver.name}"></div>
+                <p class="lv-st" id="lvSt">Recherche de la position du chauffeur...</p>
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                <script>
+                    (function () {
+                        var el = document.getElementById('lvMap');
+                        if (!el) return;
+                        var url = el.getAttribute('data-url');
+                        var addr = el.getAttribute('data-address') || '';
+                        var who = el.getAttribute('data-driver') || 'Chauffeur';
+                        var st = document.getElementById('lvSt');
+                        var box = document.getElementById('lvNotice');
+                        var map = L.map(el).setView([-18.8792, 47.5079], 12);
+                        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            {maxZoom: 19, attribution: '&copy; OpenStreetMap'}).addTo(map);
+                        var dest = null, car = null, fitted = false;
+
+                        function geocode(q) {
+                            return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(q))
+                                .then(function (r) { return r.json(); })
+                                .then(function (res) { return res.length ? [parseFloat(res[0].lat), parseFloat(res[0].lon)] : null; })
+                                .catch(function () { return null; });
+                        }
+                        function fit() {
+                            if (dest && car && !fitted) {
+                                map.fitBounds(L.latLngBounds(car.getLatLng(), dest.getLatLng()).pad(0.3));
+                                fitted = true;
+                            }
+                        }
+
+                        geocode(addr + ', Madagascar').then(function (p) {
+                            return p || geocode(addr.split(',')[0] + ', Madagascar');
+                        }).then(function (p) {
+                            if (!p) return;
+                            dest = L.marker(p).addTo(map).bindPopup('Votre adresse : ' + addr);
+                            if (!car) map.setView(p, 14);
+                            fit();
+                        });
+
+                        function refresh() {
+                            fetch(url, {credentials: 'same-origin', headers: {'Accept': 'application/json'}})
+                                .then(function (r) { return r.json(); })
+                                .then(function (d) {
+                                    if (d.fulfillment !== 'IN_DELIVERY') { location.reload(); return; }
+                                    if (d.notice === 'ARRIVED') {
+                                        box.hidden = false; box.className = 'lv-notice arr';
+                                        box.textContent = who + ' est arrivé. Il vous attend.';
+                                    } else if (d.notice === 'NEAR') {
+                                        box.hidden = false; box.className = 'lv-notice';
+                                        box.textContent = who + ' est bientôt arrivé.';
+                                    }
+                                    if (d.hasPosition) {
+                                        var pos = [d.lat, d.lng];
+                                        if (!car) {
+                                            car = L.circleMarker(pos, {radius: 10, color: '#ffffff', weight: 3,
+                                                fillColor: '#176B4D', fillOpacity: 1}).addTo(map).bindTooltip(who);
+                                        } else {
+                                            car.setLatLng(pos);
+                                        }
+                                        fit();
+                                        st.textContent = 'Position de ' + who + ' mise à jour à ' + new Date().toLocaleTimeString('fr-FR');
+                                    } else {
+                                        st.textContent = who + " n'a pas encore partagé sa position.";
+                                    }
+                                })
+                                .catch(function () {});
+                        }
+                        refresh();
+                        setInterval(refresh, 4000);
+                    })();
+                </script>
+            </div>
+
+            <!-- Le client confirme l'arrivée de la voiture -->
+            <div class="rcv" th:if="${booking.receivable}">
+                <span class="rcv-ic"><svg class="ic"><use href="#s-truck"/></svg></span>
+                <div class="rcv-tx">
+                    <b>Votre voiture est en route</b>
+                    <p>Dès qu'elle est arrivée à votre adresse, confirmez-le pour que l'équipe DiaGo soit prévenue.</p>
+                </div>
+                <form th:action="@{/bookings/{id}/received(id=${booking.id})}" method="post" data-confirm="Confirmez-vous que la voiture est bien arrivée chez vous ?">
+                    <button type="submit" class="rcv-btn"><svg class="ic"><use href="#b-tick"/></svg>J'ai bien reçu ma voiture</button>
+                </form>
+            </div>
+            <div class="rcv done" th:if="${booking.clientConfirmedAt != null}">
+                <span class="rcv-ic"><svg class="ic"><use href="#b-ok"/></svg></span>
+                <div class="rcv-tx">
+                    <b>Réception confirmée</b>
+                    <p>Vous avez confirmé avoir reçu la voiture le <span th:text="${#temporals.format(booking.clientConfirmedAt, 'dd/MM/yyyy à HH:mm')}">24/10/2026 à 13:40</span>.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="rej" th:if="${booking.fulfillment.name() == 'REJECTED'}">
+            <svg class="ic"><use href="#b-x"/></svg>
+            <div><b>Demande refusée</b><p>L'équipe DiaGo n'a pas pu valider cette réservation. Vous pouvez choisir une autre voiture.</p></div>
+            <a class="rcv-btn" th:href="@{/cars}">Voir les voitures</a>
+        </div>
+        <div class="rej" th:if="${booking.cancelled and booking.fulfillment.name() != 'REJECTED'}">
+            <svg class="ic"><use href="#b-x"/></svg>
+            <div><b>Réservation annulée</b><p>Cette réservation a été annulée.</p></div>
+        </div>
+
+        <div class="bk-grid">
+            <!-- ============ Informations ============ -->
+            <div>
+                <div class="bk-card">
+                    <div class="bk-photo"><img th:src="${booking.car.imageUrl}" th:alt="${booking.car.fullName}" onerror="this.style.display='none'"></div>
+                    <div class="bk-info">
+                        <div class="it"><span class="ii"><svg class="ic"><use href="#s-car"/></svg></span><div><small>Catégorie</small><b th:text="${booking.car.category.label}">Premium</b></div></div>
+                        <div class="it"><span class="ii"><svg class="ic"><use href="#s-calendar"/></svg></span><div><small>Départ</small><b><span th:text="${@fmt.longDate(booking.startDate)}">20 octobre 2026</span> à <span th:text="${@fmt.time(booking.startTime)}">08:00</span></b></div></div>
+                        <div class="it"><span class="ii"><svg class="ic"><use href="#s-calendar"/></svg></span><div><small>Retour</small><b><span th:text="${@fmt.longDate(booking.endDate)}">23 octobre 2026</span> à <span th:text="${@fmt.time(booking.endTime)}">18:00</span></b></div></div>
+                        <div class="it"><span class="ii"><svg class="ic"><use href="#s-pin"/></svg></span><div><small>Lieu</small><b th:text="${booking.pickupLocation}">Antananarivo, Ivandry</b></div></div>
+                        <div class="it">
+                            <span class="ii"><svg class="ic" th:if="${booking.mode.name() == 'WITH_DRIVER'}"><use href="#s-driver"/></svg><svg class="ic" th:if="${booking.mode.name() != 'WITH_DRIVER'}"><use href="#s-key"/></svg></span>
+                            <div><small>Mode</small><b th:text="${booking.mode.label}">Avec chauffeur</b></div>
+                        </div>
+                        <div class="it"><span class="ii"><svg class="ic"><use href="#s-shield"/></svg></span><div><small>Paiement</small><b th:text="${booking.paymentMethod.label}">Mobile Money</b></div></div>
+                    </div>
+                </div>
+
+                <div class="bk-card bk-drv" th:if="${booking.driver != null}">
+                    <h3>Votre chauffeur</h3>
+                    <div class="drv">
+                        <img th:if="${booking.driver.photoUrl != null and !booking.driver.photoUrl.isBlank()}" th:src="${booking.driver.photoUrl}" th:alt="${booking.driver.name}" onerror="this.style.display='none'">
+                        <div class="drv-tx">
+                            <b th:text="${booking.driver.name}">Rakoto Jean</b>
+                            <span class="drv-r"><svg class="ic"><use href="#s-star"/></svg><span th:text="${@fmt.stars(booking.driver.rating)} + ' / 5'">4,9 / 5</span></span>
+                            <span class="drv-p" th:text="${booking.driver.phone}">034 00 000 00</span>
+                        </div>
+                        <a class="drv-call" th:href="'tel:' + ${#strings.replace(booking.driver.phone, ' ', '')}"><svg class="ic"><use href="#s-phone"/></svg>Appeler</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ Prix + actions ============ -->
+            <aside class="bk-side">
+                <div class="bk-card">
+                    <h3>Détail du prix</h3>
+                    <div class="bk-ln"><span>Location (<span th:text="${price.days}">3</span> j)</span><b th:text="${@fmt.price(price.rental)}">450 000 Ar</b></div>
+                    <div class="bk-ln" th:each="l : ${price.extras}"><span th:text="${l.label}">Assurance</span><b th:text="${@fmt.price(l.amount)}">45 000 Ar</b></div>
+                    <div class="bk-tot"><span>Total</span><b th:text="${@fmt.price(booking.totalPrice)}">495 000 Ar</b></div>
+
+                    <div th:if="${booking.modifiable}" class="bk-act">
+                        <a class="fx-go" th:href="@{/bookings/{id}/edit(id=${booking.id})}">Modifier la réservation</a>
+                        <form th:action="@{/bookings/{id}/cancel(id=${booking.id})}" method="post" data-confirm="Voulez-vous vraiment annuler cette réservation ?">
+                            <button type="submit" class="bk-cancel">Annuler la réservation</button>
+                        </form>
+                    </div>
+                    <p class="bk-note" th:unless="${booking.modifiable}">Cette réservation ne peut plus être modifiée ni annulée.</p>
+                </div>
+            </aside>
+        </div>
+    </div>
+</main>
+</body>
+</html>

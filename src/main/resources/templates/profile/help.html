@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'profile')}">
+<head><title>Aide · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container" style="max-width:700px">
+        <p><a th:href="@{/profile}">← Profil</a></p>
+        <h1>Aide</h1>
+        <div class="card">
+            <h3>Comment réserver ?</h3>
+            <p class="muted">Recherchez une voiture, choisissez « avec » ou « sans chauffeur », sélectionnez vos options, vérifiez le récapitulatif puis payez.</p>
+            <h3>Puis-je annuler ?</h3>
+            <p class="muted">Oui, tant que la réservation est « À venir », depuis la page de détails de la réservation.</p>
+            <h3>Documents nécessaires</h3>
+            <p class="muted">Permis de conduire valide (sans chauffeur) et pièce d'identité à la prise en charge.</p>
+            <h3>Contact</h3>
+            <p style="margin:0">📞 +261 34 00 000 00 · ✉️ support@diago.mg</p>
+        </div>
+    </div>
+</main>
+</body>
+</html>

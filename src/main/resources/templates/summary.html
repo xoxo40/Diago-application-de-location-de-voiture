@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'cars')}">
+<head><title>Récapitulatif · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container">
+        <div th:replace="~{fragments/cards :: steps(3)}"></div>
+        <div class="page-head"><h1>Récapitulatif</h1><p class="muted">Vérifiez votre réservation avant de continuer.</p></div>
+        <div class="two-col">
+            <div class="card">
+                <img th:src="${car.imageUrl}" th:alt="${car.fullName}" style="border-radius:14px;max-height:280px;width:100%;object-fit:cover" onerror="this.style.display='none'">
+                <div class="row between" style="margin:14px 0 6px">
+                    <h2 style="margin:0" th:text="${car.fullName}">Toyota RAV4</h2>
+                    <span class="badge" th:classappend="${car.category.css}" th:text="${car.category.label}">Premium</span>
+                </div>
+                <dl class="kv" style="margin-top:14px">
+                    <dt>Date de départ</dt><dd><span th:text="${@fmt.longDate(draft.startDate)}"></span> à <span th:text="${@fmt.time(draft.startTime)}"></span></dd>
+                    <dt>Date de retour</dt><dd><span th:text="${@fmt.longDate(draft.endDate)}"></span> à <span th:text="${@fmt.time(draft.endTime)}"></span></dd>
+                    <dt>Durée</dt><dd><span th:text="${price.days}">3</span> jour(s)</dd>
+                    <dt>Lieu de prise en charge</dt><dd th:text="${draft.pickupLocation}">Antananarivo</dd>
+                    <dt>Mode</dt><dd th:text="${draft.mode.icon + ' ' + draft.mode.label}">Sans chauffeur</dd>
+                    <dt>Options</dt>
+                    <dd>
+                        <span th:if="${#lists.isEmpty(price.extras)}">Aucune</span>
+                        <span th:each="l, st : ${price.extras}"><span th:text="${l.label}"></span><span th:unless="${st.last}">, </span></span>
+                    </dd>
+                </dl>
+            </div>
+            <aside class="card sticky">
+                <h3>Détail du prix</h3>
+                <table class="price-table">
+                    <tr><td>Location (<span th:text="${price.days}"></span> j × <span th:text="${@fmt.price(car.pricePerDay)}"></span>)</td><td th:text="${@fmt.price(price.rental)}"></td></tr>
+                    <tr th:each="l : ${price.extras}"><td th:text="${l.label}">Option</td><td th:text="${@fmt.price(l.amount)}"></td></tr>
+                    <tr class="total"><td>Total</td><td th:text="${@fmt.price(price.total)}"></td></tr>
+                </table>
+                <p class="muted small" th:if="${price.extrasTotal > 0}">Dont frais supplémentaires : <span th:text="${@fmt.price(price.extrasTotal)}"></span></p>
+                <a class="btn btn-gold btn-block btn-lg" style="margin-top:14px" th:href="@{/booking/payment}">Confirmer la réservation</a>
+                <a class="btn btn-ghost btn-block" style="margin-top:10px" th:href="@{/booking/options}">← Modifier les options</a>
+            </aside>
+        </div>
+    </div>
+</main>
+</body>
+</html>

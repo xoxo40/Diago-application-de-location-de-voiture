@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion · DiaGo Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="login-bg">
+    <form class="login" th:action="@{/admin/login}" method="post">
+        <svg width="0" height="0" style="position:absolute"><symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol></svg>
+        <div class="brand" style="color:var(--ink);padding:0">
+            <div class="brand-logo"><svg class="i" style="width:22px;height:22px"><use href="#i-car"/></svg></div>
+            <div>DiaGo<small style="color:var(--muted)">Administration</small></div>
+        </div>
+        <h2>Connexion</h2>
+        <div class="alert err" th:if="${param.error}">Identifiants invalides ou accès refusé.</div>
+        <div class="fg"><label class="lbl">Email administrateur</label><input class="input" type="text" name="identifier" required autofocus></div>
+        <div class="fg"><label class="lbl">Mot de passe</label><input class="input" type="password" name="password" required></div>
+        <button class="btn btn-primary" type="submit" style="justify-content:center">Se connecter</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/admin-layout :: layout(~{::title}, ~{::main}, 'cars')}">
+<head><title>Voitures · DiaGo Admin</title></head>
+<body>
+<main>
+    <div class="head">
+        <div><h1>Voitures</h1><p>Le catalogue que voient les clients.</p></div>
+        <a class="btn btn-primary" th:href="@{/admin/cars/new}"><svg class="i"><use href="#i-plus"/></svg>Ajouter une voiture</a>
+    </div>
+
+    <div class="cars">
+        <div class="card car" th:each="c : ${cars}">
+            <div class="photo">
+                <img th:src="${c.imageUrl}" alt="" onerror="this.style.display='none'">
+                <span class="pill" th:classappend="${c.available} ? 'on' : 'off'" th:text="${c.available} ? 'En service' : 'Indisponible'"></span>
+            </div>
+            <div class="body">
+                <div class="name" th:text="${c.fullName}"></div>
+                <div><span class="pill" th:classappend="${c.category.css}" th:text="${c.category.label}"></span>
+                    <span class="bk-sub" th:text="${c.type.label}"></span></div>
+                <div class="bk-sub" th:text="${c.seats + ' places · ' + c.transmission.label + ' · ' + c.fuel.label}"></div>
+                <div class="price"><span th:text="${@fmt.price(c.pricePerDay)}"></span> <small>/ jour</small></div>
+            </div>
+            <div class="foot actions">
+                <a class="btn btn-sm" th:href="@{/admin/cars/{id}/edit(id=${c.id})}"><svg class="i"><use href="#i-edit"/></svg>Modifier</a>
+                <form th:action="@{/admin/cars/{id}/toggle(id=${c.id})}" method="post">
+                    <button class="btn btn-sm" type="submit"><svg class="i"><use href="#i-power"/></svg><span th:text="${c.available} ? 'Désactiver' : 'Activer'"></span></button>
+                </form>
+                <form th:action="@{/admin/cars/{id}/delete(id=${c.id})}" method="post" data-confirm="Supprimer définitivement cette voiture ?">
+                    <button class="btn btn-sm btn-bad" type="submit"><svg class="i"><use href="#i-trash"/></svg>Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="empty" th:if="${#lists.isEmpty(cars)}">Aucune voiture. Ajoutez la première.</div>
+</main>
+</body>
+</html>

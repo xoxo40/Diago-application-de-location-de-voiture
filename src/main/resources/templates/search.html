@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'cars')}">
+<head><title>Rechercher une voiture · DiaGo</title></head>
+<body>
+<main class="page">
+    <div class="container" style="max-width:760px">
+        <div class="page-head">
+            <h1>Rechercher une voiture</h1>
+            <p class="muted">Indiquez où et quand vous avez besoin de votre véhicule.</p>
+        </div>
+        <form class="card" th:action="@{/cars}" method="get">
+            <div class="form-group">
+                <label class="lbl" for="pickup">📍 Lieu de prise en charge</label>
+                <input class="input" id="pickup" name="pickup" list="places" th:value="${draft.pickupLocation}" required>
+                <datalist id="places">
+                    <option value="Antananarivo, Ivandry"><option value="Antananarivo Centre-ville">
+                    <option value="Aéroport Ivato"><option value="Antananarivo, Antsahavola">
+                    <option value="Toamasina"><option value="Nosy Be">
+                    <option th:each="a : ${currentUser.addresses}" th:value="${a.address}" th:label="${a.label}">
+                </datalist>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="lbl" for="startDate">Date de départ</label>
+                    <input class="input" type="date" id="startDate" name="startDate" th:value="${draft.startDate}" required>
+                </div>
+                <div class="form-group">
+                    <label class="lbl" for="startTime">Heure</label>
+                    <input class="input" type="time" id="startTime" name="startTime" th:value="${draft.startTime}" required>
+                </div>
+                <div class="form-group">
+                    <label class="lbl" for="endDate">Date de retour</label>
+                    <input class="input" type="date" id="endDate" name="endDate" th:value="${draft.endDate}" required>
+                </div>
+                <div class="form-group">
+                    <label class="lbl" for="endTime">Heure</label>
+                    <input class="input" type="time" id="endTime" name="endTime" th:value="${draft.endTime}" required>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-block btn-lg" type="submit">Rechercher</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

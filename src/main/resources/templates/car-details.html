@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main}, 'cars')}">
+<head><title th:text="${car.fullName + ' · DiaGo'}">Voiture · DiaGo</title></head>
+<body>
+<main class="fx">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="d-back" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+        <symbol id="d-bag" viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></symbol>
+        <symbol id="d-gear" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="d-wind" viewBox="0 0 24 24"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></symbol>
+        <symbol id="d-map" viewBox="0 0 24 24"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></symbol>
+        <symbol id="d-baby" viewBox="0 0 24 24"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></symbol>
+        <symbol id="d-home" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+        <symbol id="d-tick" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+        <symbol id="d-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+        <symbol id="d-edit" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></symbol>
+    </svg>
+
+    <div class="wrap">
+        <a class="fx-back" th:href="@{/cars}"><svg class="ic"><use href="#d-back"/></svg>Retour aux résultats</a>
+
+        <div class="fx-grid">
+            <!-- ================= Colonne gauche ================= -->
+            <div>
+                <div class="fx-gal">
+                    <div class="fx-main">
+                        <img id="fxMain" th:src="${car.imageUrl}" th:alt="${car.fullName}" onerror="this.style.display='none'">
+                    </div>
+                    <span class="fx-catchip" th:classappend="${car.category.css}">
+                        <svg class="ic" th:if="${car.category.css == 'simple'}"><use href="#s-car"/></svg>
+                        <svg class="ic" th:if="${car.category.css == 'premium'}"><use href="#s-star"/></svg>
+                        <svg class="ic" th:if="${car.category.css == 'vip'}"><use href="#s-crown"/></svg>
+                        <span th:text="${car.category.label}">Premium</span>
+                    </span>
+                    <div class="fx-thumbs" th:if="${#lists.size(car.gallery) > 1}">
+                        <button type="button" th:each="g, st : ${car.gallery}" th:attr="data-full=${g}" th:classappend="${st.first} ? 'on'">
+                            <img th:src="${g}" alt="" onerror="this.style.display='none'">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="fx-card">
+                    <div class="fx-title">
+                        <div>
+                            <span class="fx-sub" th:text="${car.type.label} + ' · ' + ${car.seats} + ' places'">SUV · 5 places</span>
+                            <h1 th:text="${car.fullName}">Toyota RAV4</h1>
+                        </div>
+                        <div class="fx-rate">
+                            <svg class="ic"><use href="#s-star"/></svg>
+                            <b th:text="${@fmt.stars(car.rating)}">4,8</b>
+                            <small>(<span th:text="${car.reviews}">41</span> avis)</small>
+                        </div>
+                    </div>
+                    <p class="fx-desc" th:text="${car.description}">Description de la voiture.</p>
+
+                    <div class="fx-specs">
+                        <div class="fx-spec"><span class="si"><svg class="ic"><use href="#s-users"/></svg></span><div><b th:text="${car.seats}">5</b><span>Places</span></div></div>
+                        <div class="fx-spec"><span class="si"><svg class="ic"><use href="#d-bag"/></svg></span><div><b th:text="${car.luggage}">4</b><span>Bagages</span></div></div>
+                        <div class="fx-spec"><span class="si"><svg class="ic"><use href="#d-gear"/></svg></span><div><b th:text="${car.transmission.label}">Automatique</b><span>Transmission</span></div></div>
+                        <div class="fx-spec"><span class="si"><svg class="ic"><use href="#d-wind"/></svg></span><div><b th:text="${car.ac} ? 'Oui' : 'Non'">Oui</b><span>Climatisation</span></div></div>
+                        <div class="fx-spec"><span class="si"><svg class="ic"><use href="#s-fuel"/></svg></span><div><b th:text="${car.fuel.label}">Essence</b><span>Carburant</span></div></div>
+                        <div class="fx-spec"><span class="si"><svg class="ic"><use href="#s-car"/></svg></span><div><b th:text="${car.type.label}">SUV</b><span>Type</span></div></div>
+                    </div>
+                </div>
+
+                <form th:action="@{/favorites/{id}/toggle(id=${car.id})}" method="post" class="fx-favform">
+                    <input type="hidden" name="redirect" th:value="${currentUri}">
+                    <button type="submit" class="fx-fav" th:classappend="${favorite} ? 'on'">
+                        <svg class="ic"><use href="#s-heart"/></svg>
+                        <span th:text="${favorite} ? 'Retirer des favoris' : 'Ajouter aux favoris'">Ajouter aux favoris</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ================= Colonne droite : réservation ================= -->
+            <aside class="fx-side">
+                <form id="bookForm" class="fx-book" th:action="@{/booking/start}" method="post"
+                      th:with="same=${draft.carId != null and draft.carId == car.id}"
+                      th:attr="data-rental=${car.pricePerDay * days},data-days=${days},data-driver=${driverPerDay}">
+                    <input type="hidden" name="carId" th:value="${car.id}">
+
+                    <div class="fx-price"><b th:text="${@fmt.price(car.pricePerDay)}">150 000 Ar</b><span>/ jour</span></div>
+
+                    <div class="fx-trip">
+                        <div><svg class="ic"><use href="#s-pin"/></svg><span th:text="${draft.pickupLocation}">Antananarivo, Ivandry</span></div>
+                        <div><svg class="ic"><use href="#s-calendar"/></svg>
+                            <span><span th:text="${@fmt.date(draft.startDate)}">20 oct. 2026</span> → <span th:text="${@fmt.date(draft.endDate)}">23 oct. 2026</span> · <span th:text="${days}">3</span> j</span>
+                            <a th:href="@{/search}">Modifier</a></div>
+                    </div>
+                    <div class="fx-avail" th:classappend="${!available} ? 'no'" th:text="${available} ? 'Disponible sur ces dates' : 'Indisponible sur ces dates'">Disponible sur ces dates</div>
+
+                    <!-- Avec / sans chauffeur -->
+                    <div class="fx-h">Comment souhaitez-vous louer ?</div>
+                    <div class="fx-seg">
+                        <label>
+                            <input type="radio" name="mode" value="WITH_DRIVER"
+                                   th:checked="${draft.mode.name() == 'WITH_DRIVER' and car.driverAvailable}" th:disabled="${!car.driverAvailable}">
+                            <span class="bx">
+                                <span class="si"><svg class="ic"><use href="#s-driver"/></svg></span>
+                                <b>Avec chauffeur</b>
+                                <small th:if="${car.driverAvailable}">+ <span th:text="${@fmt.price(driverPerDay)}">50 000 Ar</span> / jour</small>
+                                <small th:if="${!car.driverAvailable}">Non proposé</small>
+                            </span>
+                        </label>
+                        <label>
+                            <input type="radio" name="mode" value="WITHOUT_DRIVER"
+                                   th:checked="${draft.mode.name() != 'WITH_DRIVER' or !car.driverAvailable}">
+                            <span class="bx">
+                                <span class="si"><svg class="ic"><use href="#s-key"/></svg></span>
+                                <b>Sans chauffeur</b>
+                                <small>Vous conduisez</small>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="fx-note" data-mode="WITH_DRIVER">
+                        <b>Chauffeur professionnel DiaGo</b>
+                        <ul>
+                            <li>Chauffeur expérimenté, qui connaît les routes de Madagascar</li>
+                            <li>Ponctuel, courtois, formé aux standards DiaGo</li>
+                            <li>Aucun permis de conduire n'est demandé</li>
+                        </ul>
+                    </div>
+                    <div class="fx-note" data-mode="WITHOUT_DRIVER">
+                        <b>Conditions de location</b>
+                        <ul>
+                            <li>Permis de conduire valide depuis plus de 2 ans</li>
+                            <li>Pièce d'identité (CIN ou passeport) à la prise en charge</li>
+                            <li>Restitution avec le même niveau de carburant</li>
+                        </ul>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="fx-h">Personnalisez votre location</div>
+                    <label class="fx-opt" th:if="${car.insuranceAvailable}" th:classappend="${same and draft.insurance} ? 'on'">
+                        <span class="oi"><svg class="ic"><use href="#s-shield"/></svg></span>
+                        <span class="tx"><b>Assurance tous risques</b><small>Couverture complète</small></span>
+                        <span class="pp">+ <span th:text="${@fmt.price(insurancePerDay)}">15 000 Ar</span> / j</span>
+                        <span class="fx-sw"><input type="checkbox" name="insurance" th:checked="${same and draft.insurance}" th:attr="data-price=${insurancePerDay},data-perday='true',data-line='ins'"><i></i></span>
+                    </label>
+                    <label class="fx-opt" th:if="${car.gpsAvailable}" th:classappend="${same and draft.gps} ? 'on'">
+                        <span class="oi"><svg class="ic"><use href="#d-map"/></svg></span>
+                        <span class="tx"><b>GPS intégré</b><small>Navigation hors ligne</small></span>
+                        <span class="pp">+ <span th:text="${@fmt.price(gpsPrice)}">5 000 Ar</span></span>
+                        <span class="fx-sw"><input type="checkbox" name="gps" th:checked="${same and draft.gps}" th:attr="data-price=${gpsPrice},data-perday='false',data-line='gps'"><i></i></span>
+                    </label>
+                    <label class="fx-opt" th:if="${car.babySeatAvailable}" th:classappend="${same and draft.babySeat} ? 'on'">
+                        <span class="oi"><svg class="ic"><use href="#d-baby"/></svg></span>
+                        <span class="tx"><b>Siège bébé</b><small>Homologué sécurité</small></span>
+                        <span class="pp">+ <span th:text="${@fmt.price(babyPrice)}">8 000 Ar</span></span>
+                        <span class="fx-sw"><input type="checkbox" name="babySeat" th:checked="${same and draft.babySeat}" th:attr="data-price=${babyPrice},data-perday='false',data-line='baby'"><i></i></span>
+                    </label>
+                    <label class="fx-opt" th:if="${car.deliveryAvailable}" th:classappend="${same and draft.delivery} ? 'on'">
+                        <span class="oi"><svg class="ic"><use href="#s-truck"/></svg></span>
+                        <span class="tx"><b>Livraison de la voiture</b><small>À votre adresse</small></span>
+                        <span class="pp">+ <span th:text="${@fmt.price(deliveryPrice)}">20 000 Ar</span></span>
+                        <span class="fx-sw"><input type="checkbox" name="delivery" th:checked="${same and draft.delivery}" th:attr="data-price=${deliveryPrice},data-perday='false',data-line='deliv'"><i></i></span>
+                    </label>
+                    <label class="fx-opt" th:if="${car.returnHomeAvailable}" th:classappend="${same and draft.returnHome} ? 'on'">
+                        <span class="oi"><svg class="ic"><use href="#d-home"/></svg></span>
+                        <span class="tx"><b>Retour à domicile</b><small>Reprise à votre adresse</small></span>
+                        <span class="pp">+ <span th:text="${@fmt.price(returnPrice)}">20 000 Ar</span></span>
+                        <span class="fx-sw"><input type="checkbox" name="returnHome" th:checked="${same and draft.returnHome}" th:attr="data-price=${returnPrice},data-perday='false',data-line='ret'"><i></i></span>
+                    </label>
+
+                    <!-- Total en direct -->
+                    <div class="fx-sum">
+                        <div class="ln"><span>Location (<span th:text="${days}">3</span> j)</span><b th:text="${@fmt.price(car.pricePerDay * days)}">450 000 Ar</b></div>
+                        <div class="ln" id="ln-driver" hidden><span>Chauffeur (<span th:text="${days}">3</span> j)</span><b></b></div>
+                        <div class="ln" id="ln-ins" hidden><span>Assurance (<span th:text="${days}">3</span> j)</span><b></b></div>
+                        <div class="ln" id="ln-gps" hidden><span>GPS intégré</span><b></b></div>
+                        <div class="ln" id="ln-baby" hidden><span>Siège bébé</span><b></b></div>
+                        <div class="ln" id="ln-deliv" hidden><span>Livraison</span><b></b></div>
+                        <div class="ln" id="ln-ret" hidden><span>Retour à domicile</span><b></b></div>
+                        <div class="tot"><span>Total</span><b id="fxTotal" th:text="${@fmt.price(car.pricePerDay * days)}">450 000 Ar</b></div>
+                    </div>
+
+                    <button type="submit" class="fx-go" th:disabled="${!available}">
+                        Continuer <svg class="ic"><use href="#s-arrow"/></svg>
+                    </button>
+
+                    <ul class="fx-trust">
+                        <li><svg class="ic"><use href="#d-ok"/></svg>Réservation validée par notre équipe</li>
+                        <li><svg class="ic"><use href="#d-ok"/></svg>Modifiable avant le début de la location</li>
+                    </ul>
+                </form>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // Galerie
+            var main = document.getElementById('fxMain');
+            var thumbs = document.querySelectorAll('.fx-thumbs button');
+            thumbs.forEach(function (t) {
+                t.addEventListener('click', function () {
+                    if (main) { main.style.display = ''; main.src = t.dataset.full; }
+                    thumbs.forEach(function (x) { x.classList.toggle('on', x === t); });
+                });
+            });
+
+            // Réservation : notes selon le mode + total en direct
+            var f = document.getElementById('bookForm');
+            if (!f) return;
+            var rental = +f.dataset.rental, days = +f.dataset.days, driver = +f.dataset.driver;
+            var fmt = function (n) {
+                return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + ' Ar';
+            };
+            function update() {
+                var total = rental;
+                var m = f.querySelector('input[name="mode"]:checked');
+                var withDriver = !!m && m.value === 'WITH_DRIVER';
+                f.querySelectorAll('.fx-note').forEach(function (n) {
+                    n.classList.toggle('show', !!m && n.dataset.mode === m.value);
+                });
+                var dr = document.getElementById('ln-driver');
+                if (dr) {
+                    dr.hidden = !withDriver;
+                    if (withDriver) { total += driver * days; dr.querySelector('b').textContent = fmt(driver * days); }
+                }
+                f.querySelectorAll('.fx-opt input[type="checkbox"]').forEach(function (c) {
+                    var row = document.getElementById('ln-' + c.dataset.line);
+                    var amount = (+c.dataset.price) * (c.dataset.perday === 'true' ? days : 1);
+                    c.closest('.fx-opt').classList.toggle('on', c.checked);
+                    if (row) {
+                        row.hidden = !c.checked;
+                        if (c.checked) row.querySelector('b').textContent = fmt(amount);
+                    }
+                    if (c.checked) total += amount;
+                });
+                document.getElementById('fxTotal').textContent = fmt(total);
+            }
+            f.addEventListener('change', update);
+            update();
+        })();
+    </script>
+</main>
+</body>
+</html>

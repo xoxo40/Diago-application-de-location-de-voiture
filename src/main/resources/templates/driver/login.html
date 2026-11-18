@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Espace chauffeur · DiaGo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/driver.css}">
+</head>
+<body class="dv">
+<div class="dv-login">
+    <h1>Espace chauffeur</h1>
+    <p style="color:var(--mut);margin:0 0 10px">Connectez-vous pour voir vos livraisons.</p>
+    <div class="dv-msg ko" th:if="${param.error}">Identifiants incorrects.</div>
+    <form th:action="@{/driver/login}" method="post">
+        <label for="identifier">E-mail</label>
+        <input id="identifier" name="identifier" type="text" autocomplete="username" required>
+        <label for="password">Mot de passe</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <button class="dv-btn" type="submit">Se connecter</button>
+    </form>
+</div>
+</body>
+</html>

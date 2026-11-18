@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<form th:fragment="action(b, to, label, icon, cls)" th:action="@{/admin/bookings/{id}/status(id=${b.id})}" method="post">
+    <input type="hidden" name="to" th:value="${to}">
+    <button type="submit" class="btn btn-sm" th:classappend="${cls}">
+        <svg class="i"><use th:href="'#i-' + ${icon}"/></svg><span th:text="${label}">Action</span>
+    </button>
+</form>
+
+<div th:fragment="actions(b)" class="actions">
+    <th:block th:switch="${b.fulfillment.name()}">
+        <th:block th:case="'PENDING'">
+            <th:block th:replace="~{fragments/admin-parts :: action(${b}, 'CONFIRMED', 'Valider', 'check', 'btn-ok')}"/>
+            <th:block th:replace="~{fragments/admin-parts :: action(${b}, 'REJECTED', 'Refuser', 'x', 'btn-bad')}"/>
+        </th:block>
+        <th:block th:case="'CONFIRMED'">
+            <th:block th:if="${b.delivery}">
+                <th:block th:replace="~{fragments/admin-parts :: action(${b}, 'IN_DELIVERY', 'Lancer la livraison', 'truck', 'btn-info')}"/>
+            </th:block>
+            <th:block th:unless="${b.delivery}">
+                <th:block th:replace="~{fragments/admin-parts :: action(${b}, 'DELIVERED', 'Remettre les clés', 'key', 'btn-info')}"/>
+            </th:block>
+        </th:block>
+        <th:block th:case="'IN_DELIVERY'">
+            <th:block th:replace="~{fragments/admin-parts :: action(${b}, 'DELIVERED', 'Livrée au client', 'key', 'btn-ok')}"/>
+        </th:block>
+        <th:block th:case="'DELIVERED'">
+            <th:block th:replace="~{fragments/admin-parts :: action(${b}, 'RETURNED', 'Clôturer', 'done', 'btn-ok')}"/>
+        </th:block>
+        <th:block th:case="'REJECTED'">
+            <th:block th:replace="~{fragments/admin-parts :: action(${b}, 'PENDING', 'Rétablir', 'undo', '')}"/>
+        </th:block>
+    </th:block>
+</div>
+</body>
+</html>
